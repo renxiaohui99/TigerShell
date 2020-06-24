@@ -3,9 +3,11 @@
 #include<stdlib.h>
 int main(void)
 {
-  char* buf = malloc(1024*sizeof(char));
-  getcwd(buf, 30);
-  printf("%s\n", buf);
-  printf("%s\n", getcwd(NULL,0));
-  return 0;
+    char* buf = malloc(1024*sizeof(char));
+    getcwd(buf, 30);
+    printf("%s\n", buf);
+    printf("%s\n", getcwd(NULL,0));
+    char* cwd = getenv("PWD");
+    printf("%s\n", cwd);
+    return 0;
 }
