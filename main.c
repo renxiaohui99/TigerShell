@@ -41,13 +41,16 @@ void Init_command(){
   char* cwd = getcwd(NULL, 0);
   char *user = "user";
   char *machine = "machine";
-  printf("\033[1;32m%s>0w0<%s\033[0m", user, machine);
+  printf("\033[1;32m%s\033[0m", user);
+  printf("\033[1;33m>0w0<\033[0m");
+  printf("\033[1;32m%s\033[0m", machine);
   printf("\033[1;37m:\033[0m");
-  printf("\033[1;34m%s",pwd);
+  printf("\033[1;34m%s",cwd);
   printf("\033[1;37m$ \033[0m");
-  delete[] cwd;
-  delete[] user;
-  delete[] machine
+  free(cwd);
+  //free(user);
+  //free(machine);
+  return;
 }
 void Get_string(){
   gs.command = malloc(kMaxCommandSize * sizeof(char));
@@ -58,7 +61,7 @@ void Get_string(){
   }
   gs.command[it] = '\0';
   gs.command_size = it;
-  return command;
+  return;
 }
 int main(int argc, char* argv[]){
     gs.command=NULL;
@@ -88,5 +91,5 @@ int main(int argc, char* argv[]){
 
         }
     }
-    delete[] command;
+    free(gs.command);
 }
