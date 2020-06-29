@@ -3,6 +3,8 @@
 #include<stdlib.h>
 int main(void)
 {
+    FILE* f= fopen("main.c", "r");
+    printf("%d\n", fileno(f));
     char* buf = malloc(1024*sizeof(char));
     getcwd(buf, 30);
     printf("%s\n", buf);
