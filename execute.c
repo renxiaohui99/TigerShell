@@ -9,8 +9,10 @@
 
 /*
  *isBackground: bool, 是否后台运行
- *infile: int, 输入文件号
- *outfile: int， 输出文件号
+ *infile: FILE*, 输入, 对于“|”，由调用程序fopen一个临时buf
+ *outfile: FILE*， 输出
+ *cmd: char*, 命令
+ *argv: char*, 参数，[0] = 命令, [-1] = NULL
  */
 typedef struct CMDStruct{
     
@@ -18,7 +20,7 @@ typedef struct CMDStruct{
     FILE* outfile;
     bool isBackground;
     char* cmd;
-    char** argv; //[-1] == NULL
+    char** argv; //[-1] = NULL
 
 } CMD;
 
@@ -39,7 +41,9 @@ bool do_execute(CMD* cmd){
             dup2(fileno(cmd->outfile), STDOUT_FILENO);
         }
         //执行
-        execvp(cmd->cmd, cmd->argv);
+        if(execvp(cmd->cmd, cmd->argv)==-1){
+            printf("error happens!\n");
+        }
         //恢复重定向
         if(cmd->infile!=NULL){
             dup2(tmp_in_file, STDIN_FILENO);
@@ -79,8 +83,7 @@ bool execute(CMD** cmds){
 
 }
 
-
-int main(void){
+void test1(){
     printf("===test===\n");
     CMD cmd;
     cmd.cmd = "ls";
@@ -94,8 +97,32 @@ int main(void){
     cmds[0] = &cmd;
     cmds[1] =NULL;
     execute(cmds);
+
+}
+void test2(){
+    printf("===test2===\n");
+    CMD cmd;
+    cmd.cmd = "ls";
+    cmd.argv = malloc(1*sizeof(char*));
+    cmd.argv[0] = "ls";
+    cmd.infile = NULL;
+    cmd.outfile = fopen("test2_pipeline.ign", "w+");
+    cmd.isBackground = false;
+    CMD cmd2;
+    cmd2.cmd = "cat";
+    cmd2.argv = malloc(1*sizeof(char*));
+    cmd2.argv[0] = "cat";
+    cmd2.infile = cmd.outfile;
+    cmd2.outfile = NULL;
+    cmd2.isBackground = false;
+    CMD** cmds = malloc(3*sizeof(CMD*));
+    cmds[0] = &cmd;
+    cmds[1] =&cmd2;
+    cmds[2] = NULL;
+    execute(cmds);
+}
+int main(void){
+    //test1();
+    test2();
     return 0;
-    
-
-
 }
