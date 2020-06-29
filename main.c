@@ -8,6 +8,11 @@
 #include<string.h>
 //const char* kSCommand = {"cd"};
 //const int kSCommandSize = sizeof(kSCommand/sizeof(kSCommand[0]));
+
+void test1(){
+
+}
+
 const int kMaxCommandSize = 256;
 const int kMaxHostNameSize = 256;
 struct Status{
