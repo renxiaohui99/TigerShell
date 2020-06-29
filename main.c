@@ -5,14 +5,26 @@
 #include<stdbool.h>
 #include<sys/types.h>
 #include<sys/wait.h>
+#include<string.h>
+//const char* kSCommand = {"cd"};
+//const int kSCommandSize = sizeof(kSCommand/sizeof(kSCommand[0]));
 const int kMaxCommandSize = 256;
 const int kMaxHostNameSize = 256;
 struct Status{
   char* command;
   int command_size; //不包括终止符
-  char* pwd;
+  char* cwd;
 } gs; //global status
 
+
+void cd(char* to_dir){
+    
+    if(chdir(to_dir)==0){
+        free(gs.cwd);
+        gs.cwd = getcwd(NULL, 0);
+    }
+
+}
 void parseCommand(char* command, char* c, char* argv[]){
     int index=0;
     while(command[index]!='\0' && command[index]!=' '){
@@ -39,8 +51,7 @@ void parseCommand(char* command, char* c, char* argv[]){
 
 }
 void Init_command(){
-  char* cwd = getenv("PWD");
-  //char* cwd = getcwd(NULL,0);
+  char* cwd = gs.cwd;
   char *user = getenv("USER");
   char *host = malloc(kMaxHostNameSize*sizeof(char));
   gethostname(host, kMaxHostNameSize);
@@ -50,9 +61,6 @@ void Init_command(){
   printf("\033[1;37m:\033[0m");
   printf("\033[1;34m%s",cwd);
   printf("\033[1;37m$ \033[0m");
-  //free(cwd); free会出错，getenv返回的内存大概一直需要存在
-  //free(user);
-  //free(machine);
   return;
 }
 void Get_string(){
@@ -68,7 +76,7 @@ void Get_string(){
 }
 void Init_shell(){
     gs.command=NULL;
-    gs.pwd=NULL;
+    gs.cwd=getcwd(NULL, 0);
 }
 int main(int argc, char* argv[]){
     Init_shell();
@@ -76,6 +84,7 @@ int main(int argc, char* argv[]){
         //print header
         Init_command();
         //get command
+        //char* tmp = getenv("PWD");
         Get_string();
         //Parse command
         char* c=NULL;
@@ -86,17 +95,38 @@ int main(int argc, char* argv[]){
             argv[i] = malloc(1024*sizeof(char));
         }
         parseCommand(gs.command,c,argv);
-        //x command
-        pid_t pid = fork();
-        if(pid == 0){
-            //x process
-            execvp(c, argv);
-        }else{
-            //main process
-            int status;
-            wait(&status);
-
+        bool isSCommand = false;
+        /*
+        for(int i=0;i<kSCommandSize;++i){
+            if(strcmp(kSCommand[i], argv[0]) == 0){
+                isSCommand = true;
+                break;
+            }
         }
+        */
+        if(strcmp("cd", argv[0]) == 0){
+            isSCommand = true;
+            cd(argv[1]);
+        }else{
+        
+        
+        }
+        //x command
+        if(isSCommand){
+             
+        }else{
+            pid_t pid = fork();
+            if(pid == 0){
+                //x process
+                execvp(c, argv);
+            }else{
+                //main process
+                int status;
+                wait(&status);
+            
+            }
+
+       }
     }
     free(gs.command);
 }
