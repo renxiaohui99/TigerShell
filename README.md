@@ -1,2 +1,2 @@
 # ./c
-execute `gcc main.c -o main`
+execute `gcc main.c -o shellexe`
