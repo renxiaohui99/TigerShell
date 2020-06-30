@@ -41,6 +41,7 @@ bool do_execute(CMD* cmd){
             dup2(fileno(cmd->outfile), STDOUT_FILENO);
         }
         //执行
+        //待修改：使用searchfile查询，然后执行
         if(execvp(cmd->cmd, cmd->argv)==-1){
             printf("error happens!\n");
         }
