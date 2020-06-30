@@ -116,17 +116,17 @@ InputLine* get_string(){
 void shell_loop() {
 	while (1)
 	{
-		print_header();
 		InputLine* inputline;
 		//int status;
 		do {
+			print_header();
 			inputline = get_string();
 			fprintf(stdout, "%s\n", inputline->line);
 			free_InputLine(inputline);
 			//status = execute(args);
 			//free(args);
 
-		} while (status);
+		} while (1);
 	}
 }
 
