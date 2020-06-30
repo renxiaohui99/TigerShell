@@ -6,5 +6,6 @@
 #define REALLOC_INPUTLINE 1
 
 #define INPUT_BUFFER_SIZE 128
+#define MAX_HOSTNAME_SIZE 128
 
 #endif

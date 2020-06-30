@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
+#include <unistd.h>
+#include <pwd.h>
 
 typedef struct InputLine
 {
@@ -16,7 +16,23 @@ typedef struct InputLine
 
 void print_header()
 {
-
+	// 用户名
+	struct passwd* pwd = getpwuid(getuid());
+	char* user = pwd->pw_name;
+	fprintf(stdout, "%s", user);
+	free(user);
+	if (user != NULL) {
+		user = NULL;
+		char* hostname;
+	}
+	// 主机名
+	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
+	gethostname(hostname, sizeof(hostname));
+	fprintf(stdout, "%s:", hostname);
+	if (hostname != NULL) {
+		free(hostname);
+		hostname = NULL;
+	}
 }
 int free_InputLine(InputLine* input) {
 	if (input != NULL) {
@@ -98,7 +114,7 @@ InputLine* read_InputLine(void) {
 }
 
 char** split_InputLine(InputLine* input) {
-	fprintf(stdout, "%s", input->line);
+	fprintf(stdout, "%s\n", input->line);
 	return NULL;
 }
 
