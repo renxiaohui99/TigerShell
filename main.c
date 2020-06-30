@@ -11,6 +11,7 @@ typedef struct InputLine
 	char* line;
 	// buffer块数目
 	size_t buffer_block_cnt;
+	// 字符串最后一位(也就是'\0')的下标,也是所有不包括换行的输入串长度
 	unsigned long long buffer_pos;
 } InputLine;
 
@@ -128,7 +129,7 @@ void shell_loop() {
 				continue;
 			}
 			// 暂时只打印处理
-			fprintf(stdout, "%s\n", inputline->line);
+			fprintf(stdout, "content:%s\nlength:%llu\n", inputline->line, inputline->buffer_pos);
 			free_InputLine(inputline);
 			status = 1;
 			//status = execute(args);
