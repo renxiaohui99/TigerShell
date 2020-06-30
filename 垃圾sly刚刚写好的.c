@@ -5,8 +5,8 @@
 
 const int kMaxCommandSize = 256;
 const int kMaxHostNameSize = 256;
-const int maxWordNum = 256;
-const int maxWordSize = 64;
+#define maxWordNum 256
+#define maxWordSize 128
 
 struct Status
 {
