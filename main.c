@@ -15,9 +15,6 @@ typedef struct InputLine
 	unsigned long long buffer_pos;
 } InputLine;
 
-void init_shell();
-void init_command();
-
 void print_header()
 {
 	char* begin = "\033[36;40m";
@@ -39,7 +36,7 @@ void print_header()
 		hostname = NULL;
 	}
 }
-int free_InputLine(InputLine* input) {
+void free_InputLine(InputLine* input) {
 	if (input != NULL) {
 		if (input->line != NULL) {
 			free(input->line);
@@ -88,7 +85,16 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 		break;
 	}
 }
-InputLine* get_string(){
+
+
+void init_shell() {
+}
+
+void init_command() {
+	print_header();
+}
+
+InputLine* get_string() {
 	// 没那么便捷的实现
 	InputLine* input = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	// 这里就是int
@@ -138,11 +144,7 @@ void shell_loop() {
 	}
 }
 
-void init_shell() {
-}
-void init_command() {
-	print_header();
-}
+
 int main(int argc, char* argv[]) {
 	init_shell();
 	shell_loop();
