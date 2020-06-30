@@ -58,5 +58,6 @@ Word w;
 CMD** cmds;
 InputLine *iptl;
 bool is_background; //后台运行标识符
+int pipeNum;
 
 #endif

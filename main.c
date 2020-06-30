@@ -34,6 +34,30 @@ void free_InputLine(InputLine* input) {
 		input = NULL;
 	}
 }
+void free_cmds(CMD** cmds) {
+	if (cmds != NULL) {
+		for (size_t i = 0; i < pipeNum + 1; ++i) {
+			if (cmds[i] != NULL) {
+				if (cmds[i]->argv != NULL) {
+					free(cmds[i]->argv);
+					cmds[i]->argv = NULL;
+				}
+				if (cmds[i]->infile != NULL) {
+					fclose(cmds[i]->infile);
+					cmds[i]->infile = NULL;
+				}
+				if (cmds[i]->outfile != NULL) {
+					fclose(cmds[i]->outfile);
+					cmds[i]->outfile = NULL;
+				}
+				free(cmds[i]);
+				cmds[i] = NULL;
+			}
+		}
+		free(cmds);
+		cmds = NULL;
+	}
+}
 InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
@@ -80,6 +104,8 @@ void init_shell() {
 
 void init_command() {
 	print_header();
+	cmds = NULL;
+	iptl = NULL;
 }
 
 InputLine* get_string() {
@@ -118,19 +144,25 @@ void shell_loop() {
 			iptl = get_string();
 			// 没有输入就不处理
 			if (iptl->buffer_pos == 0) {
+				free_InputLine(iptl);
 				continue;
 			}
 			set_background();
 			delete_space();
 			split();
 			if (!fill_cmds()) {
+				free_InputLine(iptl);
+				free_cmds(cmds);
 				continue;
 			}
 			free_InputLine(iptl);
+			
 			if (!execute(cmds)) {
+				free_InputLine(iptl);
+				free_cmds(cmds);
 				continue;
 			}
-			
+			free_cmds(cmds);
 		} while (1);
 }
 
