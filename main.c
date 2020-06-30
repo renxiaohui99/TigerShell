@@ -11,8 +11,11 @@ typedef struct InputLine
 	char* line;
 	// buffer块数目
 	size_t buffer_block_cnt;
+	unsigned long long buffer_pos;
 } InputLine;
 
+void init_shell();
+void init_command();
 
 void print_header()
 {
@@ -57,6 +60,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 			exit(EXIT_FAILURE);
 		}
 		input->buffer_block_cnt = 1;
+		input->buffer_pos = 0;
 		input->line = malloc(sizeof(char) * INPUT_BUFFER_SIZE * input->buffer_block_cnt);
 		if (!input->line) {
 			fprintf(stderr, "memory out\n");
@@ -86,20 +90,19 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 InputLine* get_string(){
 	// 没那么便捷的实现
 	InputLine* input = malloc_InputLine(NULL, MALLOC_INPUTLINE);
-	size_t buffer_pos = 0;
 	// 这里就是int
 	int c;
 	for (; 1;) {
 		c = getchar();
 		if (c == EOF || c == '\n') {
-			input->line[buffer_pos] = '\0';
+			input->line[input->buffer_pos] = '\0';
 			return input;
 		}
 		else {
-			input->line[buffer_pos] = c;
+			input->line[input->buffer_pos] = c;
 		}
-		++buffer_pos;
-		if (buffer_pos >= INPUT_BUFFER_SIZE * input->buffer_block_cnt) {
+		++input->buffer_pos;
+		if (input->buffer_pos >= INPUT_BUFFER_SIZE * input->buffer_block_cnt) {
 			input = malloc_InputLine(input, REALLOC_INPUTLINE);
 		}
 	}
@@ -117,27 +120,30 @@ void shell_loop() {
 	while (1)
 	{
 		InputLine* inputline;
-		//int status;
+		int status;
 		do {
-			print_header();
+			init_command();
 			inputline = get_string();
+			if (inputline->buffer_pos == 0) {
+				continue;
+			}
+			// 暂时只打印处理
 			fprintf(stdout, "%s\n", inputline->line);
 			free_InputLine(inputline);
+			status = 1;
 			//status = execute(args);
-			//free(args);
-
-		} while (1);
+		} while (status);
+		fprintf(stdout,"error%d\n", status);
 	}
 }
 
 void init_shell() {
 }
 void init_command() {
-
+	print_header();
 }
 int main(int argc, char* argv[]) {
 	init_shell();
-	init_command();
 	shell_loop();
 	return EXIT_SUCCESS;
 }
