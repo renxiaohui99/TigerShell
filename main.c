@@ -50,6 +50,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
 	{
+		// 初次分配
 	case MALLOC_INPUTLINE:
 		free_InputLine(input);
 		input = malloc(sizeof(InputLine));
@@ -65,6 +66,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 			exit(EXIT_FAILURE);
 		}
 		return input;
+		// 再次分配
 	case REALLOC_INPUTLINE:
 		if (input == NULL) {
 			fprintf(stderr, "null pointer while malloc inputline.\n");
@@ -109,6 +111,7 @@ InputLine* get_string() {
 			input->line[input->buffer_pos] = c;
 		}
 		++input->buffer_pos;
+		// buffer不够，加大力度，再分配一块buffer
 		if (input->buffer_pos >= INPUT_BUFFER_SIZE * input->buffer_block_cnt) {
 			input = malloc_InputLine(input, REALLOC_INPUTLINE);
 		}
@@ -131,6 +134,7 @@ void shell_loop() {
 		do {
 			init_command();
 			inputline = get_string();
+			// 没有输入就不处理
 			if (inputline->buffer_pos == 0) {
 				continue;
 			}
