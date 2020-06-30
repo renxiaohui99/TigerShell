@@ -192,7 +192,8 @@ bool fill_cmds()
             }
         }
         printf("argvNum=%d\n", argvNum);
-        cmd->argv = (char**)malloc(argvNum * sizeof(char*));
+        cmd->argv = (char**)malloc((argvNum+1) * sizeof(char*));
+        cmd->argv[argvNum] = NULL;
         for (int j = 0, k = 0; j < w.wordsNum; j++)
         {
             if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
@@ -243,7 +244,8 @@ bool fill_cmds()
                     }
                 }
                 printf("n=%d argvNum=%d\n", n, argvNum);
-                cmd->argv = (char**)malloc(argvNum * sizeof(char*));
+                cmd->argv = (char**)malloc((argvNum+1) * sizeof(char*));
+                cmd->argv[argvNum] = NULL;
                 for (int j = 0, k = 0; j < pipe[n]; j++)
                 {
                     if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
@@ -289,7 +291,8 @@ bool fill_cmds()
                         }  
                     }
                     printf("n=%d argvNum=%d\n", n, argvNum);
-                    cmd->argv = (char**)malloc(argvNum * sizeof(char*));
+                    cmd->argv = (char**)malloc((argvNum +1)* sizeof(char*));
+                    cmd->argv[argvNum] = NULL;
                     for (int j = pipe[pipeNum - 1] + 1, k = 0; j < w.wordsNum; j++)
                     {
                         if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
@@ -321,7 +324,8 @@ bool fill_cmds()
                         argvNum++;
                     }
                     printf("n=%d argvNum=%d\n", n, argvNum);
-                    cmd->argv = (char**)malloc(argvNum * sizeof(char*));
+                    cmd->argv = (char**)malloc((argvNum +1)* sizeof(char*));
+                    cmd->argv[argvNum] = NULL;
                     for (int j = pipe[n - 1] + 1, k = 0; j < pipe[n]; j++)
                     {
                         if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
