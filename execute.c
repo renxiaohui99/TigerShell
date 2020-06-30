@@ -72,6 +72,10 @@ bool execute(CMD** cmds){
             isSuccess = false;
             break;
         }
+        //if(!do_execute(nextCMD)) {
+        //    isSuccess = false;
+        //    break;
+        //}
     }
     return isSuccess;
 }

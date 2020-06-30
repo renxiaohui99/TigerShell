@@ -130,7 +130,7 @@ bool fill_cmds()
 {
     bool isSuccess = false;
     int pipe[64];
-    pipeNum = 0;
+    int pipeNum = 0;
     for (int i = 0; i < w.wordsNum; i++)
     {
         if (w.words[i][0] == '|')

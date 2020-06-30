@@ -123,19 +123,14 @@ void shell_loop() {
 			set_background();
 			delete_space();
 			split();
-			free_InputLine(iptl);
 			if (!fill_cmds()) {
 				continue;
 			}
-			for (size_t i = 0; i < pipeNum + 1; ++i) {
-				if (!searchfile(cmds[i]->cmd)) {
-					goto tmplabel;
-				}
-				else if (!execute(cmds)) {
-					goto tmplabel;
-				}
+			free_InputLine(iptl);
+			if (!execute(cmds)) {
+				continue;
 			}
-		tmplabel:continue;
+			
 		} while (1);
 }
 

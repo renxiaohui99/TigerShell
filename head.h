@@ -51,13 +51,12 @@ bool fill_cmds();
 bool do_execute(CMD *cmd);
 bool execute(CMD** cmds);
 
-bool searchfile(char* file);
+bool searchfile(char* filename);
 bool scanfile(char* path, char* filename);
 
 Word w;
 CMD** cmds;
 InputLine *iptl;
 bool is_background; //后台运行标识符
-int pipeNum;
 
 #endif
