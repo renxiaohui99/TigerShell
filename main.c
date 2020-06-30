@@ -1,154 +1,135 @@
+#include "TigerShell.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <stdbool.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
-//const char* kSCommand = {"cd"};
-//const int kSCommandSize = sizeof(kSCommand/sizeof(kSCommand[0]));
 
-void test1()
+
+
+typedef struct InputLine
 {
-}
+	// 输入字符串
+	char* line;
+	// buffer块数目
+	size_t buffer_block_cnt;
+} InputLine;
 
-const int kMaxCommandSize = 256;
-const int kMaxHostNameSize = 256;
-struct Status
-{
-    char *command;
-    int command_size; //涓嶅寘鎷粓姝㈢
-    char *cwd;
-} gs; //global status
 
-void cd(char *to_dir)
+void print_header()
 {
 
-    if (chdir(to_dir) == 0)
-    {
-        free(gs.cwd);
-        gs.cwd = getcwd(NULL, 0);
-    }
 }
-void parseCommand(char *command, char *c, char *argv[])
-{
-    int index = 0;
-    while (command[index] != '\0' && command[index] != ' ')
-    {
-        c[index] = command[index];
-        argv[0][index] = command[index];
-        index++;
-    }
-    int argi = 1;
-    int argj = 0;
-    //args
-    if (command[index] != '\0')
-    {
-        while (command[index] != '\0')
-        {
-            index++;
-            argj = 0;
-            while (command[index] != '\0' && command[index] != ' ')
-            {
-                argv[argi][argj] = command[index];
-                index++;
-                argj++;
-            }
-            argi++;
-        }
-    }
-    argv[argi] = NULL;
+int free_InputLine(InputLine* input) {
+	if (input != NULL) {
+		if (input->line != NULL) {
+			free(input->line);
+			input->line = NULL;
+		}
+		free(input);
+		input = NULL;
+	}
 }
-void Init_command()
+InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
-    char *cwd = gs.cwd;
-    char *user = getenv("USER");
-    char *host = malloc(kMaxHostNameSize * sizeof(char));
-    gethostname(host, kMaxHostNameSize);
-    printf("\033[1;32m%s\033[0m", user);
-    printf("\033[1;33m>0w0<\033[0m");
-    printf("\033[1;32m%s\033[0m", host);
-    printf("\033[1;37m:\033[0m");
-    printf("\033[1;34m%s", cwd);
-    printf("\033[1;37m$ \033[0m");
-    return;
+	switch (malloc_type)
+	{
+	case MALLOC_INPUTLINE:
+		free_InputLine(input);
+		input = malloc(sizeof(InputLine));
+		if (!input) {
+			fprintf(stderr, "memory out\n");
+			exit(EXIT_FAILURE);
+		}
+		input->buffer_block_cnt = 1;
+		input->line = malloc(sizeof(char) * INPUT_BUFFER_SIZE * input->buffer_block_cnt);
+		if (!input->line) {
+			fprintf(stderr, "memory out\n");
+			exit(EXIT_FAILURE);
+		}
+		return input;
+	case REALLOC_INPUTLINE:
+		if (input == NULL) {
+			fprintf(stderr, "null pointer while malloc inputline.\n");
+			exit(1);
+		}
+		else {
+			++input->buffer_block_cnt;
+			input = realloc(input, input->buffer_block_cnt * INPUT_BUFFER_SIZE);
+			if (!input->line) {
+				fprintf(stderr, "memory out\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+		return input;
+	default:
+		fprintf(stderr, "error malloc type in malloc inputline.\n");
+		exit(EXIT_FAILURE);
+		break;
+	}
 }
-void Get_string()
-{
-    gs.command = malloc(kMaxCommandSize * sizeof(char));
-    char ch;
-    int it = 0;
-    while (it < kMaxCommandSize - 1 && (ch = getchar()) != '\n')
-    {
-        gs.command[it++] = ch;
-    }
-    gs.command[it] = '\0';
-    gs.command_size = it;
-    return;
+InputLine* read_InputLine(void) {
+
+	// 没那么便捷的实现
+	InputLine* input = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+	size_t buffer_pos = 0;
+	// 这里就是int
+	int c;
+	for (; 1;) {
+		c = getchar();
+		if (c == EOF || c == '\n') {
+			input->line[buffer_pos] = '\0';
+			return input;
+		}
+		else {
+			input->line[buffer_pos] = c;
+		}
+		++buffer_pos;
+		if (buffer_pos >= INPUT_BUFFER_SIZE * input->buffer_block_cnt) {
+			input = malloc_InputLine(input, REALLOC_INPUTLINE);
+		}
+	}
+
+	// 便捷实现,无法拿到bufsize
+	/*
+	char* line = NULL;
+	size_t bufsize = 0;
+	getline(&line, &bufsize, stdin);
+	return line;
+	*/
 }
-void Init_shell()
-{
-    gs.command = NULL;
-    gs.cwd = getcwd(NULL, 0);
+
+char** split_InputLine(InputLine* input) {
+	fprintf(stdout, "%s", input->line);
+	return NULL;
 }
-void test2() {}
-int main(int argc, char *argv[])
-{
-    Init_shell();
-    while (true)
-    {
-        //print header
-        Init_command();
-        //get command
-        //char* tmp = getenv("PWD");
-        Get_string();
-        //Parse command
-        char *c = NULL;
-        char **argv = NULL;
-        c = malloc(1024 * sizeof(char));
-        argv = malloc(16 * sizeof(char *));
-        for (int i = 0; i < 16; ++i)
-        {
-            argv[i] = malloc(1024 * sizeof(char));
-        }
-        parseCommand(gs.command, c, argv);
-        bool isSCommand = false;
-        /*
-        for(int i=0;i<kSCommandSize;++i){
-            if(strcmp(kSCommand[i], argv[0]) == 0){
-                isSCommand = true;
-                break;
-            }
-        }
-        */
-        if (strcmp("cd", argv[0]) == 0)
-        {
-            isSCommand = true;
-            cd(argv[1]);
-        }
-        else
-        {
-        }
-        //x command
-        if (isSCommand)
-        {
-        }
-        else
-        {
-            pid_t pid = fork();
-            if (pid == 0)
-            {
-                //x process
-                execvp(c, argv);
-            }
-            else
-            {
-                //main process
-                int status;
-                wait(&status);
-            }
-        }
-    }
-    free(gs.command);
+
+int execute(char** args) {
+	return 0;
+}
+
+void shell_loop() {
+	while (1)
+	{
+		print_header();
+		InputLine* inputline;
+		char** args;
+		int status;
+		do {
+			inputline = read_InputLine();
+			args = split_InputLine(inputline);
+			free_InputLine(inputline);
+			status = execute(args);
+			//free(args);
+
+		} while (status);
+	}
+}
+
+void shell_init() {
+	printf("Welcome to TigerShell!\n");
+}
+
+int main(int argc, char* argv[]) {
+	shell_init();
+	shell_loop();
+	return EXIT_SUCCESS;
 }
