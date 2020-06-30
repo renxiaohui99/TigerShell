@@ -142,7 +142,6 @@ void shell_loop() {
 }
 
 void shell_init() {
-	printf("Welcome to TigerShell!\n");
 }
 
 int main(int argc, char* argv[]) {
