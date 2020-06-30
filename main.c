@@ -83,8 +83,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 		break;
 	}
 }
-InputLine* read_InputLine(void) {
-
+InputLine* get_string(){
 	// 没那么便捷的实现
 	InputLine* input = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	size_t buffer_pos = 0;
@@ -114,38 +113,31 @@ InputLine* read_InputLine(void) {
 	*/
 }
 
-char** split_InputLine(InputLine* input) {
-	fprintf(stdout, "%s\n", input->line);
-	return NULL;
-}
-
-int execute(char** args) {
-	return 0;
-}
-
 void shell_loop() {
 	while (1)
 	{
 		print_header();
 		InputLine* inputline;
-		char** args;
-		int status;
+		//int status;
 		do {
-			inputline = read_InputLine();
-			args = split_InputLine(inputline);
+			inputline = get_string();
+			fprintf(stdout, "%s\n", inputline->line);
 			free_InputLine(inputline);
-			status = execute(args);
+			//status = execute(args);
 			//free(args);
 
 		} while (status);
 	}
 }
 
-void shell_init() {
+void init_shell() {
 }
+void init_command() {
 
+}
 int main(int argc, char* argv[]) {
-	shell_init();
+	init_shell();
+	init_command();
 	shell_loop();
 	return EXIT_SUCCESS;
 }
