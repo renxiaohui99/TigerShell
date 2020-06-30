@@ -62,9 +62,9 @@ bool do_execute(CMD* cmd){
  *cmds: CMD* [], [-1]为NULL
  */
 bool execute(CMD** cmds){
-    int it = -1;
-    CMD* nextCMD = NULL;
     int isSuccess = true;
+<<<<<<< HEAD
+/*
     while((nextCMD = cmds[++it]) != NULL){
         printf("===%s==\n", nextCMD->cmd);
         if(!searchfile(nextCMD->cmd)){
@@ -77,6 +77,17 @@ bool execute(CMD** cmds){
         //    isSuccess = false;
         //    break;
         //}
+*/
+=======
+    for (size_t i = 0; i < pipeNum + 1; ++i) {
+		if (!searchfile(cmds[i]->cmd)) {
+			printf("%s can not find.\n", cmds[i]->cmd);
+		}
+		else if (!do_execute(cmds[i])) {
+			isSuccess = false;
+			break;
+		}
+>>>>>>> f1d244db938d08d9b0b474aa535061c63e88454c
     }
     return isSuccess;
 }
