@@ -17,14 +17,8 @@ typedef struct InputLine
 void print_header()
 {
 	// 用户名
-	struct passwd* pwd = getpwuid(getuid());
-	char* user = pwd->pw_name;
-	fprintf(stdout, "%s", user);
-	free(user);
-	if (user != NULL) {
-		user = NULL;
-		char* hostname;
-	}
+	char* user = getenv("USER");
+	fprintf(stdout, "%s@", user);
 	// 主机名
 	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
 	gethostname(hostname, sizeof(hostname));
