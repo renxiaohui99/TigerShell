@@ -6,7 +6,7 @@
 const int kMaxCommandSize = 256;
 const int kMaxHostNameSize = 256;
 #define maxWordNum 256
-#define maxWordSize 128
+#define maxWordSize 64
 
 struct Status
 {
@@ -156,8 +156,9 @@ void split()
     return;
 }
 
-CMD** fill_cmds()
+bool fill_cmds()
 {
+    bool isSuccess = false;
     int pipe[64];
     int pipeNum = 0;
     for (int i = 0; i < w.wordsNum; i++)
@@ -170,6 +171,23 @@ CMD** fill_cmds()
         }
     }
     //printf("pipeNum=%d\n", pipeNum);
+
+    if (pipeNum > 0) {
+        if (pipe[0] == 0)
+            return isSuccess;
+        if (pipe[pipeNum - 1] == w.wordsNum - 1)
+            return isSuccess;
+    }
+    if (pipeNum > 1)
+    {
+        for (int j = 0; j < pipeNum-1; j++)
+        {
+            if (pipe[j + 1] - pipe[j] <= 1)
+                return isSuccess;
+        }
+    }
+    
+
     cmds = (CMD**)malloc((pipeNum + 1) * sizeof(CMD*));
     if (pipeNum == 0)
     {
@@ -210,6 +228,8 @@ CMD** fill_cmds()
                 j++;
             }
         }
+        cmd.isBackground = is_background;
+        printf("isBackground=%d\n", cmd.isBackground);
         cmds[0] = &cmd;
     }
 
@@ -256,6 +276,8 @@ CMD** fill_cmds()
                         j++;
                     }
                 }
+                cmd.isBackground = is_background;
+                printf("n=%d isBackground=%d\n", n, cmd.isBackground);
                 cmds[n] = &cmd;
             }
             else {
@@ -298,6 +320,8 @@ CMD** fill_cmds()
                             j++;
                         }
                     }
+                    cmd.isBackground = is_background;
+                    printf("n=%d isBackground=%d\n", n, cmd.isBackground);
                     cmds[n] = &cmd;
                 }
                 else {
@@ -339,12 +363,15 @@ CMD** fill_cmds()
                             j++;
                         }
                     }
+                    cmd.isBackground = is_background;
+                    printf("n=%d isBackground=%d\n", n, cmd.isBackground);
                     cmds[n] = &cmd;
                 }
             }
         } 
     }
-    return cmds;
+    isSuccess = true;
+    return isSuccess;
 }
 
 
@@ -359,12 +386,12 @@ int main()
     gs.command_size = strlen("cat \"hello word\"");*/
     //gs.command = "ls -a >> outfile.txt -s";
     //gs.command_size = strlen("ls -a >> outfile.txt -s");
-    gs.command = "ls -l << infile.txt | grep \".c\" | cat >> outfile.txt";
-    gs.command_size = strlen("ls -l << infile.txt | grep \".c\" | cat >> outfile.txt");
+    gs.command = "ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &";
+    gs.command_size = strlen("ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &");
     //printf("%d\n", gs.command_size);
     set_background();
     delete_space();
     split();
-    fill_cmds();
+    printf("%d\n",fill_cmds());
     return 0;
 }
