@@ -16,13 +16,20 @@ typedef struct InputLine
 
 void print_header()
 {
+	char* begin = "\033[36;40m";
+	char* end = "\033[0m";
 	// 用户名
 	char* user = getenv("USER");
-	fprintf(stdout, "%s@", user);
+	
+	fprintf(stdout, "%s%s%s", begin, user, end);
+
+	//花样字体
+	fprintf(stdout, "\033[33;40m O.O \033[0m");
+
 	// 主机名
 	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
 	gethostname(hostname, sizeof(hostname));
-	fprintf(stdout, "%s:", hostname);
+	fprintf(stdout, "%s%s%s:",begin, hostname, end);
 	if (hostname != NULL) {
 		free(hostname);
 		hostname = NULL;
