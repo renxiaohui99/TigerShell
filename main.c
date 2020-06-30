@@ -1,19 +1,7 @@
 #include "head.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <pwd.h>
-
-typedef struct InputLine
-{
-	// 输入字符串
-	char* line;
-	// buffer块数目
-	size_t buffer_block_cnt;
-	// 字符串最后一位(也就是'\0')的下标,也是所有不包括换行的输入串长度
-	unsigned long long buffer_pos;
-} InputLine;
 
 void print_header()
 {
@@ -52,7 +40,6 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 	{
 		// 初次分配
 	case MALLOC_INPUTLINE:
-		free_InputLine(input);
 		input = malloc(sizeof(InputLine));
 		if (!input) {
 			fprintf(stderr, "memory out\n");
@@ -69,8 +56,8 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 		// 再次分配
 	case REALLOC_INPUTLINE:
 		if (input == NULL) {
-			fprintf(stderr, "null pointer while malloc inputline.\n");
-			exit(1);
+			fprintf(stderr, "null pointer while malloc iptl.\n");
+			exit(EXIT_FAILURE);
 		}
 		else {
 			++input->buffer_block_cnt;
@@ -82,12 +69,11 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 		}
 		return input;
 	default:
-		fprintf(stderr, "error malloc type in malloc inputline.\n");
+		fprintf(stderr, "error malloc type in malloc iptl.\n");
 		exit(EXIT_FAILURE);
 		break;
 	}
 }
-
 
 void init_shell() {
 }
@@ -127,25 +113,30 @@ InputLine* get_string() {
 }
 
 void shell_loop() {
-	while (1)
-	{
-		InputLine* inputline;
-		int status;
 		do {
 			init_command();
-			inputline = get_string();
+			iptl = get_string();
 			// 没有输入就不处理
-			if (inputline->buffer_pos == 0) {
+			if (iptl->buffer_pos == 0) {
 				continue;
 			}
-			// 暂时只打印处理
-			fprintf(stdout, "content:%s\nlength:%llu\n", inputline->line, inputline->buffer_pos);
-			free_InputLine(inputline);
-			status = 1;
-			//status = execute(args);
-		} while (status);
-		fprintf(stdout,"error%d\n", status);
-	}
+			set_background();
+			delete_space();
+			split();
+			free_InputLine(iptl);
+			if (!fill_cmds()) {
+				continue;
+			}
+			for (size_t i = 0; i < pipeNum + 1; ++i) {
+				if (!searchfile(cmds[i]->cmd)) {
+					goto tmplabel;
+				}
+				else if (!execute(cmds)) {
+					goto tmplabel;
+				}
+			}
+		tmplabel:continue;
+		} while (1);
 }
 
 

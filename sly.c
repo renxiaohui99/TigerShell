@@ -1,47 +1,18 @@
-﻿#include <stdio.h>
+﻿#include "head.h"
+
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 const int kMaxCommandSize = 256;
-const int kMaxHostNameSize = 256;
-#define maxWordNum 256
-#define maxWordSize 64
+//const int kMaxHostNameSize = 256;
 
-struct Status
-{
-    char* command;
-    int command_size; //不包括终止符
-    char* cwd;
-} gs; //global status
-
-
-bool is_background = false; //后台运行标识符
-
-struct Word
-{
-    char words[maxWordNum][maxWordSize];
-    int wordsNum;
-} w;
-
-typedef struct CMDStruct {
-
-    FILE* infile;
-    FILE* outfile;
-    bool isBackground;
-    char* cmd;
-    char** argv; //[-1] == NULL
-
-} CMD;
-
-CMD** cmds;
 
 void set_background()
 {
     //printf("%d\n", is_background);
-    for (int i = 0; i < gs.command_size; i++)
+    for (int i = 0; i < iptl->buffer_pos; i++)
     {
-        if (gs.command[i] == '&')
+        if (iptl->line[i] == '&')
         {
             is_background = true;
             break;
@@ -59,9 +30,9 @@ void delete_space()
     int blank = 0;
     int j = 0;
     int deleteNum = 0;
-    for (int i = 0; i < gs.command_size; i++)
+    for (int i = 0; i < iptl->buffer_pos; i++)
     {
-        if (gs.command[i] == ' ')
+        if (iptl->line[i] == ' ')
         {
             blank++;
         }
@@ -91,19 +62,19 @@ void delete_space()
         }
         else
         {
-            afterDelate[j] = gs.command[i];
+            afterDelate[j] = iptl->line[i];
             j++;
         }
     }
-    gs.command_size = gs.command_size - deleteNum;
-    if (afterDelate[gs.command_size - 1] == ' ')
+    iptl->buffer_pos = iptl->buffer_pos - deleteNum;
+    if (afterDelate[iptl->buffer_pos - 1] == ' ')
     {
-        gs.command_size--;
+        iptl->buffer_pos--;
     }
-    gs.command = afterDelate;
-    //printf("%d\n", gs.command_size);
-    //    for(int i=0;i<gs.command_size;i++)
-    //printf("%c", gs.command[i]);
+    iptl->line = afterDelate;
+    //printf("%d\n", iptl->buffer_pos);
+    //    for(int i=0;i<iptl->buffer_pos;i++)
+    //printf("%c", iptl->line[i]);
     //printf("结束\n");
     return;
 }
@@ -113,31 +84,30 @@ void split()
     int num = 0;
     int i, j;
     bool quotation = false;
-    for (i = 0, j = 0; i < gs.command_size; i++)
+    for (i = 0, j = 0; i < iptl->buffer_pos; i++)
     {
-        if (gs.command[i] == 34 && quotation == false)  //双引号
+        if (iptl->line[i] == 34 && quotation == false)  //双引号
         {
             quotation = true;
         }
         else
         {
-            if (gs.command[i] == 34 && quotation == true)
+            if (iptl->line[i] == 34 && quotation == true)
             {
                 quotation = false;
             }
         }
-        /*printf("%c ", gs.command[i]);
-        printf("%d ", gs.command[i]);
+        /*printf("%c ", iptl->line[i]);
+        printf("%d ", iptl->line[i]);
         printf("%d\n", quotation);*/
-
-        if (gs.command[i] != ' ')
+        if (iptl->line[i] != ' ')
         {
-            w.words[num][j++] = gs.command[i];
+            w.words[num][j++] = iptl->line[i];
         }
         else 
         {
             if(quotation == true)
-                w.words[num][j++] = gs.command[i];
+                w.words[num][j++] = iptl->line[i];
             else
             {
                 w.words[num][j] = '\0';
@@ -160,7 +130,7 @@ bool fill_cmds()
 {
     bool isSuccess = false;
     int pipe[64];
-    int pipeNum = 0;
+    pipeNum = 0;
     for (int i = 0; i < w.wordsNum; i++)
     {
         if (w.words[i][0] == '|')
@@ -383,23 +353,23 @@ bool fill_cmds()
 }
 
 
-int main()
-{
-    gs.command = (char*)malloc(kMaxCommandSize * sizeof(char));
-    //gs.command = "  ls    -s -a &  \0";
-    //gs.command_size = strlen("  ls    -s -a &  \0");
-    //gs.command = "ls -l";
-    //gs.command_size = strlen("ls -l");
-    /*gs.command = "cat \"hello word\"";
-    gs.command_size = strlen("cat \"hello word\"");*/
-    //gs.command = "ls -a >> outfile.txt -s";
-    //gs.command_size = strlen("ls -a >> outfile.txt -s");
-    gs.command = "ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &";
-    gs.command_size = strlen("ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &");
-    //printf("%d\n", gs.command_size);
-    set_background();
-    delete_space();
-    split();
-    printf("fill_cmds isSuccess=%d\n",fill_cmds());
-    return 0;
-}
+//int main()
+//{
+//    iptl->line = (char*)malloc(kMaxCommandSize * sizeof(char));
+//    //iptl->line = "  ls    -s -a &  \0";
+//    //iptl->buffer_pos = strlen("  ls    -s -a &  \0");
+//    //iptl->line = "ls -l";
+//    //iptl->buffer_pos = strlen("ls -l");
+//    /*iptl->line = "cat \"hello word\"";
+//    iptl->buffer_pos = strlen("cat \"hello word\"");*/
+//    //iptl->line = "ls -a >> outfile.txt -s";
+//    //iptl->buffer_pos = strlen("ls -a >> outfile.txt -s");
+//    iptl->line = "ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &";
+//    iptl->buffer_pos = strlen("ls -l << infile.txt | grep \".c\" | cat >> outfile.txt &");
+//    //printf("%d\n", iptl->buffer_pos);
+//    set_background();
+//    delete_space();
+//    split();
+//    printf("fill_cmds isSuccess=%d\n",fill_cmds());
+//    return 0;
+//}
