@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 const int kMaxCommandSize = 256;
 const int kMaxHostNameSize = 256;
