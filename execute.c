@@ -66,7 +66,9 @@ bool execute(CMD** cmds){
     CMD* nextCMD = NULL;
     int isSuccess = true;
     while((nextCMD = cmds[++it]) != NULL){
-        if(!do_execute(nextCMD)){
+        if(!searchfile(nextCMD->cmd)){
+            printf("%s can not find.\n", nextCMD->cmd);
+        }else if(!do_execute(nextCMD)){
             isSuccess = false;
             break;
         }
