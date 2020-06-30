@@ -9,7 +9,7 @@
 
 #include<dirent.h>
 
-bool scanfile(char* path, char* filename){
+bool scanfile(char* path,const char* filename){
     bool res = false;
     DIR* dir = opendir(path);
     struct dirent* entry;
@@ -21,10 +21,11 @@ bool scanfile(char* path, char* filename){
     }
     return res;
 }
-bool searchfile(char* filename){
+bool searchfile(const char* filename){
+    printf(">>%s<<\n", filename);
     const char* kPath = getenv("PATH");
     int size = (strlen(kPath)+1);
-    char* path = malloc((size)*sizeof(char*));
+    char* path = (char*)malloc((size)*sizeof(char*));
     //add . to $PATH
     //char* path = malloc((2+size)*sizeof(char*));
     //path[0]='.';
@@ -35,7 +36,10 @@ bool searchfile(char* filename){
     }
     //printf("%s\n", path);
     //strtok具有状态！线程不安全，并且会改变原字符串！
+    printf("==%s\n",path);
+    printf("=%s\n", filename);
     path = strtok(path, ":");
+
     while(path!=NULL){
         if(scanfile(path, filename)){
             printf("%s\n", path);

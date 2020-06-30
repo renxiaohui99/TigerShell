@@ -66,6 +66,7 @@ bool execute(CMD** cmds){
     CMD* nextCMD = NULL;
     int isSuccess = true;
     while((nextCMD = cmds[++it]) != NULL){
+        printf("===%s==\n", nextCMD->cmd);
         if(!searchfile(nextCMD->cmd)){
             printf("%s can not find.\n", nextCMD->cmd);
         }else if(!do_execute(nextCMD)){
@@ -84,13 +85,13 @@ void test1(){
     printf("===test===\n");
     CMD cmd;
     cmd.cmd = "ls";
-    cmd.argv = malloc(2*sizeof(char*));
+    cmd.argv = (char**)malloc(2*sizeof(char*));
     cmd.argv[0] = "ls";
     cmd.argv[1] = "-l";
     cmd.infile = NULL;
     cmd.outfile = fopen("outtestfile.ign", "w+");
     cmd.isBackground = false;
-    CMD** cmds = malloc(2*sizeof(CMD*));
+    CMD** cmds = (CMD**)malloc(2*sizeof(CMD*));
     cmds[0] = &cmd;
     cmds[1] =NULL;
     execute(cmds);
