@@ -22,7 +22,7 @@ bool scanfile(char* path,const char* filename){
     return res;
 }
 bool searchfile(const char* filename){
-    printf(">>%s<<\n", filename);
+    //printf(">>%s<<\n", filename);
     const char* kPath = getenv("PATH");
     int size = (strlen(kPath)+1);
     char* path = (char*)malloc((size)*sizeof(char*));
@@ -36,18 +36,20 @@ bool searchfile(const char* filename){
     }
     //printf("%s\n", path);
     //strtok具有状态！线程不安全，并且会改变原字符串！
-    printf("==%s\n",path);
-    printf("=%s\n", filename);
+    //printf("==%s\n",path);
+    //printf("=%s\n", filename);
     path = strtok(path, ":");
-
+    bool res = false;
     while(path!=NULL){
         if(scanfile(path, filename)){
-            printf("%s\n", path);
+            //printf("%s\n", path);
+            res = true;
             break;
         }
         path = strtok(NULL, ":");
     }
     //
+    return res;
 
 }
 //void test(){
