@@ -1,8 +1,9 @@
-#include<stdio.h>
+#include "head.h"
+
 #include<stdlib.h>
 #include<unistd.h>
 #include<pthread.h>
-#include<stdbool.h>
+
 #include<sys/types.h>
 #include<sys/wait.h>
 #include<string.h>
@@ -14,18 +15,9 @@
  *cmd: char*, 命令
  *argv: char*, 参数，[0] = 命令, [-1] = NULL
  */
-typedef struct CMDStruct{
-    
-    FILE* infile;
-    FILE* outfile;
-    bool isBackground;
-    char* cmd;
-    char** argv; //[-1] = NULL
 
-} CMD;
 
 bool do_execute(CMD* cmd){
-    
     pid_t pid = fork();
     if(pid == 0){
         int tmp_in_file;
@@ -65,7 +57,6 @@ bool do_execute(CMD* cmd){
 
 }
 
-
 /*
 
  *cmds: CMD* [], [-1]为NULL
@@ -81,7 +72,6 @@ bool execute(CMD** cmds){
         }
     }
     return isSuccess;
-
 }
 
 void test1(){
@@ -122,8 +112,8 @@ void test2(){
     cmds[2] = NULL;
     execute(cmds);
 }
-int main(void){
-    //test1();
-    test2();
-    return 0;
-}
+//int main(void){
+//    //test1();
+//    test2();
+//    return 0;
+//}

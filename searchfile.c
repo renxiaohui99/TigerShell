@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "head.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
@@ -46,20 +46,20 @@ bool searchfile(char* filename){
     //
 
 }
-void test(){
-    searchfile("ls");
-}
-void test2(){
-    searchfile("c");
-}
-void test3(){
-    if(!searchfile("u78")){
-        printf("u78 not found");
-    }
-}
-int main(void){
-    //test();
-    //test2();
-    test3();
-    return 0;
-}
+//void test(){
+//    searchfile("ls");
+//}
+//void test2(){
+//    searchfile("c");
+//}
+//void test3(){
+//    if(!searchfile("u78")){
+//        printf("u78 not found");
+//    }
+//}
+//int main(void){
+//    //test();
+//    //test2();
+//    test3();
+//    return 0;
+//}
