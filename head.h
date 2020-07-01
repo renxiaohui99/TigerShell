@@ -48,7 +48,7 @@ void delete_space();
 void split();
 bool fill_cmds();
 
-bool do_execute(CMD *cmd);
+bool do_execute(const char* path, CMD *cmd);
 bool execute(CMD** cmds);
 
 const char* searchfile(const char* filename);

@@ -136,12 +136,6 @@ void init_command() {
 	iptl = NULL;
 }
 
-void cd(char* to_dir)
-{
-	if (chdir(to_dir) == 0)
-	{
-	}
-}
 
 void* get_string(void *nothing) {
 	

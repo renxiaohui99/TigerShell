@@ -21,7 +21,7 @@ bool setListener(bool t){
             //NL TO CR
             //new_attr.c_iflag &= (INLCR);
             
-            //new_attr.c_oflag &= (~OPOST);
+            new_attr.c_oflag &= (~OPOST);
             //new_attr.c_oflag &= (ONLCR);
             //new_attr.c_lflag &= (ECHOE);
             //new_attr.c_lflag &= (ECHOK);
@@ -43,11 +43,21 @@ void test(){
     setListener(true);
     char ch;
     while(ch = getchar()){
-        printf("%c",ch);
+        printf("%d",ch);
     }
     
 }
+void test2(){
+    struct termios attr; 
+    cfmakeraw(&attr);
+    tcsetattr(0, TCSANOW, &attr);
+    char ch;
+    while(ch = getchar()){
+        printf("%d",ch);
+    }
+
+}
 int main(int argc, char** argv){
-    test();
+    test2();
     return 0;
 }
