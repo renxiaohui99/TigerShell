@@ -156,7 +156,8 @@ void shell_loop() {
 				continue;
 			}
 			free_InputLine(iptl);
-			
+		        printf("11%s11\n", cmds[0]->argv[0]);
+                        printf("11%s11\n", cmds[0]->argv[1]);
 			if (!execute(cmds)) {
 				free_InputLine(iptl);
 				free_cmds(cmds);
