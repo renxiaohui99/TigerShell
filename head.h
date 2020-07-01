@@ -41,7 +41,7 @@ typedef struct Word
 
 void init_shell();
 void init_command();
-InputLine* get_string();
+void* get_string(void *);
 
 void set_background();
 void delete_space();
