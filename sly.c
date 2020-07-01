@@ -105,8 +105,22 @@ void split()
         {
             if (iptl->line[i] == '.' && j == 0)
             {
-                w.words[num][0] = '.';
-                w.words[num][1] = '\0';
+                if (i < iptl->buffer_pos - 1) {
+                    if (iptl->line[i + 1] == '.')
+                    {
+                        w.words[num][0] = '.';
+                        w.words[num][1] = '.';
+                        w.words[num][2] = '\0';
+                    }
+                    else {
+                        w.words[num][0] = '.';
+                        w.words[num][1] = '\0';
+                    }
+                }
+                else {
+                    w.words[num][0] = '.';
+                    w.words[num][1] = '\0';
+                }
                 ++num;
             }
             w.words[num][j++] = iptl->line[i];
