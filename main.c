@@ -42,7 +42,7 @@ void print_header()
 
 	// Ŀ¼
 	char* dir = get_current_dir_name();
-	fprintf(stdout, "%s%s%s:%s#", begin, hostname, end,dir );
+	fprintf(stdout, "%s%s%s:\033[32;40m%s\033[0m\033[33;40m# \033[0m", begin, hostname, end,dir );
 	if (hostname != NULL) {
 		free(hostname);
 		hostname = NULL;
@@ -138,7 +138,6 @@ void init_command() {
 
 void cd(char* to_dir)
 {
-
 	if (chdir(to_dir) == 0)
 	{
 	}
