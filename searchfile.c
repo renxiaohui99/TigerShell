@@ -21,7 +21,8 @@ bool scanfile(char* path,const char* filename){
     }
     return res;
 }
-bool searchfile(const char* filename){
+
+const char* searchfile(const char* filename){  
     //printf(">>%s<<\n", filename);
     const char* kPath = getenv("PATH");
     int size = (strlen(kPath)+1);
@@ -49,7 +50,27 @@ bool searchfile(const char* filename){
         path = strtok(NULL, ":");
     }
     //
-    return res;
+    if(res){
+        int path_size = strlen(path);
+        int cmd_size = strlen(filename);
+        printf("=%d %d\n", path_size, cmd_size);
+        int tot_size = path_size+cmd_size+2;
+        char* filepath = (char* )malloc((tot_size)*sizeof(char));
+        for(int i=0;i<tot_size;++i){
+            if(i == path_size){
+                filepath[i] = '/';
+            }else if(i == tot_size - 1){
+                filepath[i] = '\0';
+            }else if(i < path_size){
+                filepath[i] = path[i];
+            }else if(i > path_size){
+                filepath[i] = filename[i-path_size-1];
+            }
+        }
+        return filepath;
+    }else{
+        return NULL;
+    }
 
 }
 //void test(){
@@ -67,5 +88,10 @@ bool searchfile(const char* filename){
 //    //test();
 //    //test2();
 //    test3();
+//    return 0;
+//}
+//int main(void){
+//    const char* s = searchfile("ls");
+//    printf("%s\n", s);
 //    return 0;
 //}

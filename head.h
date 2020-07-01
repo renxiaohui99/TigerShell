@@ -51,7 +51,7 @@ bool fill_cmds();
 bool do_execute(CMD *cmd);
 bool execute(CMD** cmds);
 
-bool searchfile(const char* filename);
+const char* searchfile(const char* filename);
 bool scanfile(char* path, const char* filename);
 
 Word w;
