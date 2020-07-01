@@ -2,7 +2,27 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <termio.h>
 
+
+int scanKeyboard()
+{
+	int in;
+	struct termios new_settings;
+	struct termios stored_settings;
+	tcgetattr(0, &stored_settings);
+	new_settings = stored_settings;
+	new_settings.c_lflag &= (~ICANON);
+	new_settings.c_cc[VTIME] = 0;
+	tcgetattr(0, &stored_settings);
+	new_settings.c_cc[VMIN] = 1;
+	tcsetattr(0, TCSANOW, &new_settings);
+
+	in = getchar();
+
+	tcsetattr(0, TCSANOW, &stored_settings);
+	return in;
+}
 void print_header()
 {
 	char* begin = "\033[36;40m";
@@ -108,24 +128,71 @@ void init_command() {
 	iptl = NULL;
 }
 
-InputLine* get_string() {
+void* get_string(void *nothing) {
+	
 	// 没那么便捷的实现
-	InputLine* input = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	// 这里就是int
-	int c;
+	int c = 0;
+	size_t cursor = 0;
 	for (; 1;) {
-		c = getchar();
+		c = scanKeyboard();
 		if (c == EOF || c == '\n') {
-			input->line[input->buffer_pos] = '\0';
-			return input;
+			return NULL;
+		}
+		else if (c == '\033') {
+			c = scanKeyboard();
+			if (c == '[') {
+				c = scanKeyboard();
+				// abcd分别是上下左右
+				if (c == 'A') {
+					fprintf(stdout, "ok");
+				}
+				else if (c == 'B') {
+					fprintf(stdout, "Kok");
+				}
+				else if (c == 'D') {
+					if (cursor != 0) {
+						--cursor;
+					}
+					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor+5, iptl->line, iptl->buffer_pos - cursor);
+					
+					/*fprintf(stdout, "\033[4D\033[K");
+					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
+						putchar(iptl->line[i]);
+					}
+					if (cursor!=0) {
+						--cursor;
+					}
+					fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor));*/
+				}
+				else if (c == 'C') {
+					if (cursor != iptl->buffer_pos) {
+						++cursor;
+					}
+					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor + 3, iptl->line, iptl->buffer_pos - cursor);
+					/*fprintf(stdout, "\033[4D\033[K");
+					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
+						putchar(iptl->line[i]);
+					}
+					if (cursor != iptl->buffer_pos) {
+						fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor - 1));
+						++cursor;
+					}*/
+				}
+				fflush(stdout);
+			}
 		}
 		else {
-			input->line[input->buffer_pos] = c;
+			iptl->line[iptl->buffer_pos] = c;
+			iptl->line[iptl->buffer_pos + 1] = '\0';
+			++cursor;
+			++iptl->buffer_pos;
 		}
-		++input->buffer_pos;
+		
 		// buffer不够，加大力度，再分配一块buffer
-		if (input->buffer_pos >= INPUT_BUFFER_SIZE * input->buffer_block_cnt) {
-			input = malloc_InputLine(input, REALLOC_INPUTLINE);
+		if (iptl->buffer_pos >= INPUT_BUFFER_SIZE * iptl->buffer_block_cnt-1) {
+			iptl = malloc_InputLine(iptl, REALLOC_INPUTLINE);
 		}
 	}
 
@@ -141,7 +208,7 @@ InputLine* get_string() {
 void shell_loop() {
 		do {
 			init_command();
-			iptl = get_string();
+			get_string(NULL);
 			// 没有输入就不处理
 			if (iptl->buffer_pos == 0) {
 				free_InputLine(iptl);
