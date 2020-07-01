@@ -1,11 +1,14 @@
 #define  _GNU_SOURCE
+#define CLOSE "\001\033[0m\002"
+#define BEGIN(x,y) "\001\033["#x";"#y"m\002"
+
 #include "head.h"
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <termio.h>
-
-
+#include <readline/readline.h>
+#include <readline/history.h>
 int scanKeyboard()
 {
 	int in;
@@ -26,23 +29,54 @@ int scanKeyboard()
 }
 void print_header()
 {
-	char* begin = "\033[36;40m";
-	char* end = "\033[0m";
-	// 用户名
+	char* begin_u = "\033[36;40m";
+	char* end_u = "\033[0m";
+	char* begin_d = "\033[33;40m";
+	char* end_d = "\033[0m";
+	char* begin_h = begin_u;
+	char* end_h = end_u;
+	// 脫脙禄搂脙没
 	char* user = getenv("USER");
 	
-	fprintf(stdout, "%s%s%s", begin, user, end);
+	//fprintf(stdout, "%s%s%s", begin, user, end);
 
-	//花样字体
-	fprintf(stdout, "\033[33;40m O.O \033[0m");
+	//禄篓脩霉脳脰脤氓
+	//fprintf(stdout, "\033[33;40m O.O \033[0m");
 
-	// 主机名
+	// 脰梅禄煤脙没
 	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
 	gethostname(hostname, sizeof(hostname));
 
-	// 目录
+	// 脛驴脗录
 	char* dir = get_current_dir_name();
-	fprintf(stdout, "%s%s%s:\033[32;40m%s\033[0m\033[33;40m# \033[0m", begin, hostname, end,dir );
+	const int kMaxHeaderSize = 256;
+	char* header = (char*) malloc(kMaxHeaderSize*sizeof(char));
+	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+		BEGIN(36,40),
+		user,
+		CLOSE,
+		BEGIN(33,40),
+		" O.O ",
+		CLOSE,
+		BEGIN(36,40),
+		hostname,
+		CLOSE,
+		BEGIN(33,40),
+		":",
+		CLOSE,
+		BEGIN(36,40),
+		dir,
+		CLOSE,
+		BEGIN(33,40),
+		"# ",
+		CLOSE
+	);
+	//123
+	//printf("%s", header);
+	readline(header);
+//	printf("%s", header);
+	free(header);
+	//fprintf(stdout, "%s%s%s:\033[32;40m%s\033[0m\033[33;40m# \033[0m", begin, hostname, end,dir );
 	if (hostname != NULL) {
 		free(hostname);
 		hostname = NULL;
@@ -90,7 +124,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
 	{
-		// 初次分配
+		// 鲁玫麓脦路脰脜盲
 	case MALLOC_INPUTLINE:
 		input = malloc(sizeof(InputLine));
 		if (!input) {
@@ -105,7 +139,7 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 			exit(EXIT_FAILURE);
 		}
 		return input;
-		// 再次分配
+		// 脭脵麓脦路脰脜盲
 	case REALLOC_INPUTLINE:
 		if (input == NULL) {
 			fprintf(stderr, "null pointer while malloc iptl.\n");
@@ -139,9 +173,9 @@ void init_command() {
 
 void* get_string(void *nothing) {
 	
-	// 没那么便捷的实现
+	// 脙禄脛脟脙麓卤茫陆脻碌脛脢碌脧脰
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
-	// 这里就是int
+	// 脮芒脌茂戮脥脢脟int
 	int c = 0;
 	size_t cursor = 0;
 	for (; 1;) {
@@ -153,7 +187,7 @@ void* get_string(void *nothing) {
 			c = scanKeyboard();
 			if (c == '[') {
 				c = scanKeyboard();
-				// abcd分别是上下左右
+				// abcd路脰卤冒脢脟脡脧脧脗脳贸脫脪
 				if (c == 'A') {
 					fprintf(stdout, "ok");
 				}
@@ -199,13 +233,13 @@ void* get_string(void *nothing) {
 			++iptl->buffer_pos;
 		}
 		
-		// buffer不够，加大力度，再分配一块buffer
+		// buffer虏禄鹿禄拢卢录脫麓贸脕娄露脠拢卢脭脵路脰脜盲脪禄驴茅buffer
 		if (iptl->buffer_pos >= INPUT_BUFFER_SIZE * iptl->buffer_block_cnt-1) {
 			iptl = malloc_InputLine(iptl, REALLOC_INPUTLINE);
 		}
 	}
 
-	// 便捷实现,无法拿到bufsize
+	// 卤茫陆脻脢碌脧脰,脦脼路篓脛脙碌陆bufsize
 	/*
 	char* line = NULL;
 	size_t bufsize = 0;
@@ -218,7 +252,7 @@ void shell_loop() {
 		do {
 			init_command();
 			get_string(NULL);
-			// 没有输入就不处理
+			// 脙禄脫脨脢盲脠毛戮脥虏禄麓娄脌铆
 			if (iptl->buffer_pos == 0) {
 				free_InputLine(iptl);
 				continue;

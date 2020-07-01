@@ -10,7 +10,8 @@ bool setListener(bool t){
             printf("func setListener: tcgetattr failed!\n");
             return false;
         }else{
-
+            new_attr.c_cc[VERASE] = '\b';
+            /*
             new_attr = init_attr;
             //切换为非标准输入
             new_attr.c_lflag &= (~ICANON);
@@ -26,8 +27,9 @@ bool setListener(bool t){
             //new_attr.c_lflag &= (ECHOE);
             //new_attr.c_lflag &= (ECHOK);
             //new_attr.c_lflag &= (XCASE);
+            */
             //TCSANOW:不等待数据传输完毕就立即改变属性
-            if(tcsetattr(0, TCSANOW, &new_attr) == -1){
+            if(tcsetattr(fileno(stdin), TCSANOW, &new_attr) == -1){
                 printf("func setListener: tcsetattr failed!\n");
                 return false;
             }else{
@@ -40,10 +42,14 @@ bool setListener(bool t){
 
 }
 void test(){
-    setListener(true);
-    char ch;
-    while(ch = getchar()){
-        printf("%d",ch);
+    char s[256];
+    while(true){
+        
+        setListener(true);
+        read(fileno(stdin), s, sizeof(s));
+//        printf("%s\n",s);
+        write(fileno(stdout), s, sizeof(s));
+        setListener(false);
     }
     
 }
@@ -58,6 +64,6 @@ void test2(){
 
 }
 int main(int argc, char** argv){
-    test2();
+    test();
     return 0;
 }
