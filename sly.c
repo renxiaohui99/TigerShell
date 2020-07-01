@@ -103,6 +103,12 @@ void split()
         printf("%d\n", quotation);*/
         if (iptl->line[i] != ' ')
         {
+            if (iptl->line[i] == '.' && j == 0)
+            {
+                w.words[num][0] = '.';
+                w.words[num][i] = '\0';
+                ++num;
+            }
             w.words[num][j++] = iptl->line[i];
         }
         else 
