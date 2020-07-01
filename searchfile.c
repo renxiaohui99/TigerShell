@@ -42,7 +42,7 @@ bool searchfile(const char* filename){
     bool res = false;
     while(path!=NULL){
         if(scanfile(path, filename)){
-            //printf("%s\n", path);
+            printf("%s\n", path);
             res = true;
             break;
         }

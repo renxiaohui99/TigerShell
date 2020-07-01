@@ -34,6 +34,9 @@ bool do_execute(CMD* cmd){
         }
         //执行
         //待修改：使用searchfile查询，然后执行
+        printf("00%s00\n", cmd->cmd);
+        printf("00%s00\n", cmd->argv[0]);
+        printf("00%s00\n", cmd->argv[1]);
         if(execvp(cmd->cmd, cmd->argv)==-1){
             printf("error happens!\n");
         }
@@ -44,11 +47,15 @@ bool do_execute(CMD* cmd){
         if(cmd->outfile!=NULL){
             dup2(tmp_out_file, STDOUT_FILENO);
         }
+        exit(0);
+        
     }else{
         int status=0;
         int isSuccess = true;
         if(!cmd->isBackground){
-            if(wait(&status) == -1){
+            //waitpid(pid,NULL, 0);
+            //if(wait(&status) == -1){
+            if(waitpid(pid, NULL, 0) == -1){
                 isSuccess = false;
             }
         }
@@ -82,10 +89,12 @@ bool execute(CMD** cmds){
 			printf("%s can not find.\n", cmds[i]->cmd);
 		}
 		else if (!do_execute(cmds[i])) {
+                        printf("==%d==\n", isSuccess);
 			isSuccess = false;
 			break;
 		}
     }
+    printf("%d\n", isSuccess);
     return isSuccess;
 }
 
