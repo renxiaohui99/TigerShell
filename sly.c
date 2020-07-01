@@ -220,8 +220,6 @@ bool fill_cmds()
             {
                 cmd->argv[k] = w.words[j];
                 printf("argv[%d]=%s\n", k, cmd->argv[k]);
-                if (strcmp(cmd->argv[k],"cd")==0)
-                    j++;
                 k++;
             }
             else {
@@ -274,8 +272,6 @@ bool fill_cmds()
                     {
                         cmd->argv[k] = w.words[j];
                         printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
-                        if (strcmp(cmd->argv[k],"cd")==0)
-                            j++;
                         k++;
                     }
                     else {
@@ -323,8 +319,6 @@ bool fill_cmds()
                         {
                             cmd->argv[k] = w.words[j];
                             printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
-                            if (strcmp(cmd->argv[k],"cd")==0)
-                                j++;
                             k++;
                         }
                         else {
@@ -358,8 +352,6 @@ bool fill_cmds()
                         {
                             cmd->argv[k] = w.words[j];
                             printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
-                            if (strcmp(cmd->argv[k],"cd")==0)
-                                j++;
                             k++;
                         }
                         else {
