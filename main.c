@@ -1,3 +1,4 @@
+#define  _GNU_SOURCE
 #include "head.h"
 
 #include <stdlib.h>
@@ -38,10 +39,17 @@ void print_header()
 	// 主机名
 	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
 	gethostname(hostname, sizeof(hostname));
-	fprintf(stdout, "%s%s%s:",begin, hostname, end);
+
+	// 目录
+	char* dir = get_current_dir_name();
+	fprintf(stdout, "%s%s%s:\033[32;40m%s\033[0m\033[33;40m# \033[0m", begin, hostname, end,dir );
 	if (hostname != NULL) {
 		free(hostname);
 		hostname = NULL;
+	}
+	if (dir != NULL) {
+		free(dir);
+		dir = NULL;
 	}
 }
 void free_InputLine(InputLine* input) {
@@ -126,6 +134,13 @@ void init_command() {
 	print_header();
 	cmds = NULL;
 	iptl = NULL;
+}
+
+void cd(char* to_dir)
+{
+	if (chdir(to_dir) == 0)
+	{
+	}
 }
 
 void* get_string(void *nothing) {
