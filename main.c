@@ -84,6 +84,40 @@ void get_string() {
 	gethostname(hostname, sizeof(hostname));
 
 	char* dir = get_current_dir_name();
+	int dir_len = strlen(dir);
+	char* home = getenv("HOME");
+	int home_len = strlen(home);
+	int pre_len = home_len-strlen(user);
+	bool replace;
+	if(dir_len<home_len){
+		replace = false;
+	}else{
+		for(int i=0;i<home_len;++i){
+			if(dir[i] != home[i]){
+				replace = false;
+				break;
+			}else{
+				if(i == home_len - 1){
+					replace  = true;
+				}
+			}
+		}
+	}
+	if(replace){
+		int back_len  =dir_len - home_len;
+		char* rdir = (char*) malloc((back_len+2)*sizeof(char));
+		rdir[0] = '~';
+		for(int i=1;i<=back_len+2;++i){
+			if(i == back_len+1){
+				rdir[i] = '\0';
+			}
+			rdir[i] = dir[i-1+home_len];
+		}
+		free(dir);
+		dir = rdir;
+		rdir = NULL;
+	}
+	
 	char* header = (char*)malloc(MAX_HEADER_SIZE * sizeof(char));
 	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
 		BEGIN(33, 40),
