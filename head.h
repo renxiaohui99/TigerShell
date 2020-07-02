@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include<stdbool.h>
+#include <readline/history.h>
 
 #define MALLOC_INPUTLINE 0
 #define MAX_INPUTLINE_SIZE 2048

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <termio.h>
 #include <readline/readline.h>
-#include <readline/history.h>
+
 
 InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
