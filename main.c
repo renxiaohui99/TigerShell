@@ -9,23 +9,29 @@
 #include <termio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-int scanKeyboard()
+
+InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
-	int in;
-	struct termios new_settings;
-	struct termios stored_settings;
-	tcgetattr(0, &stored_settings);
-	new_settings = stored_settings;
-	new_settings.c_lflag &= (~ICANON);
-	new_settings.c_cc[VTIME] = 0;
-	tcgetattr(0, &stored_settings);
-	new_settings.c_cc[VMIN] = 1;
-	tcsetattr(0, TCSANOW, &new_settings);
-
-	in = getchar();
-
-	tcsetattr(0, TCSANOW, &stored_settings);
-	return in;
+	switch (malloc_type)
+	{
+	case MALLOC_INPUTLINE:
+		input = malloc(sizeof(InputLine));
+		if (!input) {
+			fprintf(stderr, "memory out\n");
+			exit(EXIT_FAILURE);
+		}
+		input->buffer_pos = 0;
+		input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
+		if (!input->line) {
+			fprintf(stderr, "memory out\n");
+			exit(EXIT_FAILURE);
+		}
+		return input;
+	default:
+		fprintf(stderr, "error malloc type in malloc iptl.\n");
+		exit(EXIT_FAILURE);
+		break;
+	}
 }
 void free_InputLine(InputLine* input) {
 	if (input != NULL) {
@@ -61,29 +67,6 @@ void free_cmds(CMD** cmds) {
 		cmds = NULL;
 	}
 }
-InputLine* malloc_InputLine(InputLine* input, int malloc_type)
-{
-	switch (malloc_type)
-	{
-	case MALLOC_INPUTLINE:
-		input = malloc(sizeof(InputLine));
-		if (!input) {
-			fprintf(stderr, "memory out\n");
-			exit(EXIT_FAILURE);
-		}
-		input->buffer_pos = 0;
-		input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
-		if (!input->line) {
-			fprintf(stderr, "memory out\n");
-			exit(EXIT_FAILURE);
-		}
-		return input;
-	default:
-		fprintf(stderr, "error malloc type in malloc iptl.\n");
-		exit(EXIT_FAILURE);
-		break;
-	}
-}
 
 void init_shell() {
 }
@@ -102,15 +85,21 @@ void get_string() {
 
 	char* dir = get_current_dir_name();
 	char* header = (char*)malloc(MAX_HEADER_SIZE * sizeof(char));
-	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+		BEGIN(33, 40),
+		"[",
+		CLOSE,
 		BEGIN(36, 40),
 		user,
 		CLOSE,
 		BEGIN(33, 40),
-		" O.O ",
+		"][",
 		CLOSE,
 		BEGIN(36, 40),
 		hostname,
+		CLOSE,
+		BEGIN(33, 40),
+		"]",
 		CLOSE,
 		BEGIN(33, 40),
 		":",
@@ -123,8 +112,12 @@ void get_string() {
 		CLOSE
 	);
 
+	// get string and history
+	read_history(NULL);
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	iptl->line = readline(header);
+	add_history(iptl->line);
+	write_history(NULL);
 	iptl->buffer_pos = strlen(iptl->line);
 
 	if (header != NULL) {
@@ -141,88 +134,12 @@ void get_string() {
 	}
 }
 
-//void get_string() {
-//	
-//	// Ã»ÄÇÃ´±ã½ÝµÄÊµÏÖ
-//	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
-//	// ÕâÀï¾ÍÊÇint
-//	int c = 0;
-//	size_t cursor = 0;
-//	for (; 1;) {
-//		c = scanKeyboard();
-//		if (c == EOF || c == '\n') {
-//			return;
-//		}
-//		else if (c == '\033') {
-//			c = scanKeyboard();
-//			if (c == '[') {
-//				c = scanKeyboard();
-//				// abcd·Ö±ðÊÇÉÏÏÂ×óÓÒ
-//				if (c == 'A') {
-//					fprintf(stdout, "ok");
-//				}
-//				else if (c == 'B') {
-//					fprintf(stdout, "Kok");
-//				}
-//				else if (c == 'D') {
-//					if (cursor != 0) {
-//						--cursor;
-//					}
-//					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor+5, iptl->line, iptl->buffer_pos - cursor);
-//					
-//					/*fprintf(stdout, "\033[4D\033[K");
-//					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
-//						putchar(iptl->line[i]);
-//					}
-//					if (cursor!=0) {
-//						--cursor;
-//					}
-//					fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor));*/
-//				}
-//				else if (c == 'C') {
-//					if (cursor != iptl->buffer_pos) {
-//						++cursor;
-//					}
-//					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor + 3, iptl->line, iptl->buffer_pos - cursor);
-//					/*fprintf(stdout, "\033[4D\033[K");
-//					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
-//						putchar(iptl->line[i]);
-//					}
-//					if (cursor != iptl->buffer_pos) {
-//						fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor - 1));
-//						++cursor;
-//					}*/
-//				}
-//				fflush(stdout);
-//			}
-//		}
-//		else {
-//			iptl->line[iptl->buffer_pos] = c;
-//			iptl->line[iptl->buffer_pos + 1] = '\0';
-//			++cursor;
-//			++iptl->buffer_pos;
-//		}
-//		
-//		// buffer²»¹»£¬¼Ó´óÁ¦¶È£¬ÔÙ·ÖÅäÒ»¿ébuffer
-//		if (iptl->buffer_pos >= INPUT_BUFFER_SIZE * iptl->buffer_block_cnt-1) {
-//			iptl = malloc_InputLine(iptl, REALLOC_INPUTLINE);
-//		}
-//	}
-//
-//	// ±ã½ÝÊµÏÖ,ÎÞ·¨ÄÃµ½bufsize
-//	/*
-//	char* line = NULL;
-//	size_t bufsize = 0;
-//	getline(&line, &bufsize, stdin);
-//	return line;
-//	*/
-//}
 
 void shell_loop() {
 		do {
 			init_command();
 			get_string();
-			// Ã»ÓÐÊäÈë¾Í²»´¦Àí
+
 			if (iptl->buffer_pos == 0) {
 				free_InputLine(iptl);
 				continue;
