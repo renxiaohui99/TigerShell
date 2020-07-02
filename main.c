@@ -150,9 +150,11 @@ void get_string() {
 	read_history(NULL);
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	iptl->line = readline(header);
-	add_history(iptl->line);
-	write_history(NULL);
 	iptl->buffer_pos = strlen(iptl->line);
+	if (iptl->buffer_pos != 0) {
+		add_history(iptl->line);
+		write_history(NULL);
+	}
 
 	if (header != NULL) {
 		free(header);
@@ -173,7 +175,6 @@ void shell_loop() {
 		do {
 			init_command();
 			get_string();
-
 			if (iptl->buffer_pos == 0) {
 				free_InputLine(iptl);
 				continue;
@@ -188,7 +189,6 @@ void shell_loop() {
 			}
 			free_InputLine(iptl);
 			if (!execute(cmds)) {
-				free_InputLine(iptl);
 				free_cmds(cmds);
 				continue;
 			}
