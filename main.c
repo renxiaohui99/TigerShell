@@ -197,6 +197,7 @@ void shell_loop() {
 			free_InputLine(iptl);
 			
 			if (!execute(cmds)) {
+				printf("execute ok.\n");
 				free_cmds(cmds);
 				continue;
 			}
