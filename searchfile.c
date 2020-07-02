@@ -47,6 +47,9 @@ const char* searchfile(const char* filename){
 		}
 		path = strtok_r(NULL, ":", &saveptr);
 	}
+	saveptr = NULL;
+	free(path);
+	path = NULL;
 	//
 	if(res){
 		int path_size = strlen(path);
