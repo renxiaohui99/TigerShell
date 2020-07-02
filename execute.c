@@ -22,7 +22,7 @@ bool cd(CMD* cmd){
 		return false;
 	}
 	if(chdir(to_dir) == -1){
-		printf("cd: chdir failed!\n");
+		printf("cd: chdir failed, check if path is existed!\n");
 		return false;
 	}else{
 		return true;
