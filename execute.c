@@ -7,7 +7,7 @@
 #include<sys/types.h>
 #include<sys/wait.h>
 #include<string.h>
-
+#include <time.h>
 
 bool cd(CMD* cmd){
 	char* to_dir;
