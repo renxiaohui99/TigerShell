@@ -71,12 +71,14 @@ void delete_space()
     {
         iptl->buffer_pos--;
     }
+    char* tmp = iptl->line;
     iptl->line = afterDelate;
+    free(tmp);
+    
     //printf("%d\n", iptl->buffer_pos);
     //    for(int i=0;i<iptl->buffer_pos;i++)
     //printf("%c", iptl->line[i]);
     //printf("结束\n");
-    free(afterDelate);
     return;
 }
 

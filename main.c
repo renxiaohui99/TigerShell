@@ -174,7 +174,6 @@ void init_command() {
 void get_string() {
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	iptl->line = readline(BEGIN(49, 34)"S#"CLOSE);
-	printf("%s\n", iptl->line);
 	iptl->buffer_pos = strlen(iptl->line);
 }
 
