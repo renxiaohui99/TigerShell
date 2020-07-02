@@ -34,7 +34,16 @@ bool history(CMD* cmd) {
         HIST_ENTRY** his = history_list();
 		if (his != NULL) {
 			for (size_t i = 0; his[i] != NULL; ++i) {
-				fprintf(stdout, "%s\n", his[i]->line);
+				time_t time_stamp = history_get_time(his[i]);
+				struct tm* pt = localtime(&time_stamp);
+				fprintf(stdout,  "%d-%02d-%02d %02d:%02d:%02d \033[40;33m%s\033[0m\n",
+					pt->tm_year + 1900,
+					pt->tm_mon + 1,
+					pt->tm_mday,
+					pt->tm_hour,
+					pt->tm_min,
+					pt->tm_sec,
+					his[i]->line);
 			}
 		}
 		else {
@@ -55,7 +64,16 @@ bool history(CMD* cmd) {
 			long int dest_pos = i - atoi(cmd->argv[1]);
 			dest_pos = dest_pos > 0 ? dest_pos : 0;
 			for (i = dest_pos; his[i] != NULL; ++i) {
-				fprintf(stdout, "%s\n", his[i]->line);
+				time_t time_stamp = history_get_time(his[i]);
+				struct tm* pt = localtime(&time_stamp);
+				fprintf(stdout, "%d-%02d-%02d %02d:%02d:%02d \033[40;33m%s\033[0m\n",
+					pt->tm_year + 1900,
+					pt->tm_mon + 1,
+					pt->tm_mday,
+					pt->tm_hour,
+					pt->tm_min,
+					pt->tm_sec,
+					his[i]->line);
 			}
 		}
 		else {
