@@ -12,15 +12,23 @@
 bool scanfile(char *path, const char *filename)
 {
 	//	printf("%s中搜索%s\n", path, filename);
-	bool res = false;
+	bool res;
 	DIR *dir = opendir(path);
-	struct dirent *entry;
-	while (entry = readdir(dir))
+	if (dir == NULL)
 	{
-		if (0 == strcmp(entry->d_name, filename))
+		res = false;
+	}
+	else
+	{
+		res = false;
+		struct dirent *entry;
+		while (entry = readdir(dir))
 		{
-			res = true;
-			break;
+			if (0 == strcmp(entry->d_name, filename))
+			{
+				res = true;
+				break;
+			}
 		}
 	}
 	return res;
