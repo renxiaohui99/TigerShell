@@ -3,12 +3,12 @@
 
 #include <stdio.h>
 #include<stdbool.h>
-// main函数内用到
-#define MALLOC_INPUTLINE 0
-#define REALLOC_INPUTLINE 1
 
-#define INPUT_BUFFER_SIZE 128
-#define MAX_HOSTNAME_SIZE 128
+#define MALLOC_INPUTLINE 0
+#define MAX_INPUTLINE_SIZE 2048
+
+#define MAX_HOSTNAME_SIZE 512
+#define MAX_HEADER_SIZE 1024
 
 #define maxWordNum 256
 #define maxWordSize 64
@@ -27,8 +27,6 @@ typedef struct InputLine
 {
 	// 输入字符串
 	char* line;
-	// buffer块数目
-	size_t buffer_block_cnt;
 	// 字符串最后一位(也就是'\0')的下标,也是所有不包括换行的输入串长度
 	unsigned long long buffer_pos;
 } InputLine;

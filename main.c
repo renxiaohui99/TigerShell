@@ -27,65 +27,6 @@ int scanKeyboard()
 	tcsetattr(0, TCSANOW, &stored_settings);
 	return in;
 }
-void print_header()
-{
-	char* begin_u = "\033[36;40m";
-	char* end_u = "\033[0m";
-	char* begin_d = "\033[33;40m";
-	char* end_d = "\033[0m";
-	char* begin_h = begin_u;
-	char* end_h = end_u;
-	// ÓÃ»§Ãû
-	char* user = getenv("USER");
-	
-	//fprintf(stdout, "%s%s%s", begin, user, end);
-
-	//»¨Ñù×ÖÌå
-	//fprintf(stdout, "\033[33;40m O.O \033[0m");
-
-	// Ö÷»úÃû
-	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
-	gethostname(hostname, sizeof(hostname));
-
-	// Ä¿Â¼
-	char* dir = get_current_dir_name();
-	const int kMaxHeaderSize = 256;
-	char* header = (char*) malloc(kMaxHeaderSize*sizeof(char));
-	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-		BEGIN(36,40),
-		user,
-		CLOSE,
-		BEGIN(33,40),
-		" O.O ",
-		CLOSE,
-		BEGIN(36,40),
-		hostname,
-		CLOSE,
-		BEGIN(33,40),
-		":",
-		CLOSE,
-		BEGIN(36,40),
-		dir,
-		CLOSE,
-		BEGIN(33,40),
-		"# ",
-		CLOSE
-	);
-	//123
-	//printf("%s", header);
-	readline(header);
-//	printf("%s", header);
-	free(header);
-	//fprintf(stdout, "%s%s%s:\033[32;40m%s\033[0m\033[33;40m# \033[0m", begin, hostname, end,dir );
-	if (hostname != NULL) {
-		free(hostname);
-		hostname = NULL;
-	}
-	if (dir != NULL) {
-		free(dir);
-		dir = NULL;
-	}
-}
 void free_InputLine(InputLine* input) {
 	if (input != NULL) {
 		if (input->line != NULL) {
@@ -124,34 +65,17 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
 	{
-		// ³õ´Î·ÖÅä
 	case MALLOC_INPUTLINE:
 		input = malloc(sizeof(InputLine));
 		if (!input) {
 			fprintf(stderr, "memory out\n");
 			exit(EXIT_FAILURE);
 		}
-		input->buffer_block_cnt = 1;
 		input->buffer_pos = 0;
-		input->line = malloc(sizeof(char) * INPUT_BUFFER_SIZE * input->buffer_block_cnt);
+		input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
 		if (!input->line) {
 			fprintf(stderr, "memory out\n");
 			exit(EXIT_FAILURE);
-		}
-		return input;
-		// ÔÙ´Î·ÖÅä
-	case REALLOC_INPUTLINE:
-		if (input == NULL) {
-			fprintf(stderr, "null pointer while malloc iptl.\n");
-			exit(EXIT_FAILURE);
-		}
-		else {
-			++input->buffer_block_cnt;
-			input = realloc(input, input->buffer_block_cnt * INPUT_BUFFER_SIZE);
-			if (!input->line) {
-				fprintf(stderr, "memory out\n");
-				exit(EXIT_FAILURE);
-			}
 		}
 		return input;
 	default:
@@ -165,16 +89,56 @@ void init_shell() {
 }
 
 void init_command() {
-	//print_header();
 	cmds = NULL;
 	iptl = NULL;
 }
 
 
 void get_string() {
+	
+	char* user = getenv("USER");
+	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
+	gethostname(hostname, sizeof(hostname));
+
+	char* dir = get_current_dir_name();
+	char* header = (char*)malloc(MAX_HEADER_SIZE * sizeof(char));
+	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+		BEGIN(36, 40),
+		user,
+		CLOSE,
+		BEGIN(33, 40),
+		" O.O ",
+		CLOSE,
+		BEGIN(36, 40),
+		hostname,
+		CLOSE,
+		BEGIN(33, 40),
+		":",
+		CLOSE,
+		BEGIN(36, 40),
+		dir,
+		CLOSE,
+		BEGIN(33, 40),
+		"# ",
+		CLOSE
+	);
+
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
-	iptl->line = readline(BEGIN(49, 34)"S#"CLOSE);
+	iptl->line = readline(header);
 	iptl->buffer_pos = strlen(iptl->line);
+
+	if (header != NULL) {
+		free(header);
+		header = NULL;
+	}
+	if (hostname != NULL) {
+		free(hostname);
+		hostname = NULL;
+	}
+	if (dir != NULL) {
+		free(dir);
+		dir = NULL;
+	}
 }
 
 //void get_string() {
