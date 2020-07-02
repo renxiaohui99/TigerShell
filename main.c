@@ -8,8 +8,13 @@
 #include <unistd.h>
 #include <termio.h>
 #include <readline/readline.h>
-
-
+#include <signal.h>
+void handleSIGINT(){
+	//printf("Bye-Bye\n");
+	putchar('\n');
+	write_history(NULL);
+	exit(0);
+}
 InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
@@ -70,6 +75,7 @@ void free_cmds(CMD** cmds) {
 
 void init_shell() {
 	read_history(NULL);
+	signal(SIGINT, handleSIGINT);
 }
 
 void init_command() {
@@ -209,6 +215,6 @@ void shell_loop() {
 int main(int argc, char* argv[]) {
 	init_shell();
 	shell_loop();
-	write_history(NULL);
+	write_history("");
 	return EXIT_SUCCESS;
 }
