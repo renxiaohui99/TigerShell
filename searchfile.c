@@ -42,6 +42,7 @@ const char* searchfile(const char* filename){
 	}
 	//strtok具有状态！线程不安全，并且会改变原字符串！
 	//printf("=%s\n", filename);
+	char* init_ptr = path;
 	char* saveptr;
 	path = strtok_r(path, ":", &saveptr);
 	bool res = false;
@@ -52,9 +53,6 @@ const char* searchfile(const char* filename){
 		}
 		path = strtok_r(NULL, ":", &saveptr);
 	}
-	saveptr = NULL;
-	free(path);
-	path = NULL;
 	//
 	if(res){
 		int path_size = strlen(path);
@@ -72,8 +70,16 @@ const char* searchfile(const char* filename){
 				filepath[i] = filename[i-path_size-1];
 			}
 		}
+		free(init_ptr);
+		init_ptr = NULL;
+		saveptr=NULL;
+		path = NULL;
 		return filepath;
 	}else{
+		free(init_ptr);
+		init_ptr = NULL;
+		saveptr = NULL;
+		path = NULL;
 		return NULL;
 	}
 
