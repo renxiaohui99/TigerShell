@@ -1,6 +1,3 @@
-00ls00
-00ls00
-00(null)00
 abc
 buffile
 c
@@ -8,18 +5,16 @@ calMod.ign
 execute.c
 grepfile.ign
 head.h
-kblistener.c
 kblistener.x
 main.c
+makefile
 printer
-printer.c
 README.md
-rxh的Main.c
 searchfile.c
 shellexe.x
 sly.c
 s.x
 test2_pipeline.ign
-test.c
+testdir
 t.ign
 tmp.x
