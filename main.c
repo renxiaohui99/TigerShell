@@ -1,4 +1,4 @@
-#define  _GNU_SOURCE
+#define _GNU_SOURCE
 #define CLOSE "\001\033[0m\002"
 #define BEGIN(x,y) "\001\033["#x";"#y"m\002"
 
@@ -165,93 +165,100 @@ void init_shell() {
 }
 
 void init_command() {
-	print_header();
+	//print_header();
 	cmds = NULL;
 	iptl = NULL;
 }
 
 
-void* get_string(void *nothing) {
-	
-	// Ã»ÄÇÃ´±ã½ÝµÄÊµÏÖ
+void get_string() {
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
-	// ÕâÀï¾ÍÊÇint
-	int c = 0;
-	size_t cursor = 0;
-	for (; 1;) {
-		c = scanKeyboard();
-		if (c == EOF || c == '\n') {
-			return NULL;
-		}
-		else if (c == '\033') {
-			c = scanKeyboard();
-			if (c == '[') {
-				c = scanKeyboard();
-				// abcd·Ö±ðÊÇÉÏÏÂ×óÓÒ
-				if (c == 'A') {
-					fprintf(stdout, "ok");
-				}
-				else if (c == 'B') {
-					fprintf(stdout, "Kok");
-				}
-				else if (c == 'D') {
-					if (cursor != 0) {
-						--cursor;
-					}
-					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor+5, iptl->line, iptl->buffer_pos - cursor);
-					
-					/*fprintf(stdout, "\033[4D\033[K");
-					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
-						putchar(iptl->line[i]);
-					}
-					if (cursor!=0) {
-						--cursor;
-					}
-					fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor));*/
-				}
-				else if (c == 'C') {
-					if (cursor != iptl->buffer_pos) {
-						++cursor;
-					}
-					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor + 3, iptl->line, iptl->buffer_pos - cursor);
-					/*fprintf(stdout, "\033[4D\033[K");
-					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
-						putchar(iptl->line[i]);
-					}
-					if (cursor != iptl->buffer_pos) {
-						fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor - 1));
-						++cursor;
-					}*/
-				}
-				fflush(stdout);
-			}
-		}
-		else {
-			iptl->line[iptl->buffer_pos] = c;
-			iptl->line[iptl->buffer_pos + 1] = '\0';
-			++cursor;
-			++iptl->buffer_pos;
-		}
-		
-		// buffer²»¹»£¬¼Ó´óÁ¦¶È£¬ÔÙ·ÖÅäÒ»¿ébuffer
-		if (iptl->buffer_pos >= INPUT_BUFFER_SIZE * iptl->buffer_block_cnt-1) {
-			iptl = malloc_InputLine(iptl, REALLOC_INPUTLINE);
-		}
-	}
-
-	// ±ã½ÝÊµÏÖ,ÎÞ·¨ÄÃµ½bufsize
-	/*
-	char* line = NULL;
-	size_t bufsize = 0;
-	getline(&line, &bufsize, stdin);
-	return line;
-	*/
+	iptl->line = readline(BEGIN(49, 34)"S#"CLOSE);
+	printf("%s\n", iptl->line);
+	iptl->buffer_pos = strlen(iptl->line);
 }
+
+//void get_string() {
+//	
+//	// Ã»ÄÇÃ´±ã½ÝµÄÊµÏÖ
+//	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+//	// ÕâÀï¾ÍÊÇint
+//	int c = 0;
+//	size_t cursor = 0;
+//	for (; 1;) {
+//		c = scanKeyboard();
+//		if (c == EOF || c == '\n') {
+//			return;
+//		}
+//		else if (c == '\033') {
+//			c = scanKeyboard();
+//			if (c == '[') {
+//				c = scanKeyboard();
+//				// abcd·Ö±ðÊÇÉÏÏÂ×óÓÒ
+//				if (c == 'A') {
+//					fprintf(stdout, "ok");
+//				}
+//				else if (c == 'B') {
+//					fprintf(stdout, "Kok");
+//				}
+//				else if (c == 'D') {
+//					if (cursor != 0) {
+//						--cursor;
+//					}
+//					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor+5, iptl->line, iptl->buffer_pos - cursor);
+//					
+//					/*fprintf(stdout, "\033[4D\033[K");
+//					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
+//						putchar(iptl->line[i]);
+//					}
+//					if (cursor!=0) {
+//						--cursor;
+//					}
+//					fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor));*/
+//				}
+//				else if (c == 'C') {
+//					if (cursor != iptl->buffer_pos) {
+//						++cursor;
+//					}
+//					fprintf(stdout, "\033[%ldD\033[K%s\033[%lldD", cursor + 3, iptl->line, iptl->buffer_pos - cursor);
+//					/*fprintf(stdout, "\033[4D\033[K");
+//					for (size_t i = cursor; i < iptl->buffer_pos; ++i) {
+//						putchar(iptl->line[i]);
+//					}
+//					if (cursor != iptl->buffer_pos) {
+//						fprintf(stdout, "\033[%dD", (int)(iptl->buffer_pos - cursor - 1));
+//						++cursor;
+//					}*/
+//				}
+//				fflush(stdout);
+//			}
+//		}
+//		else {
+//			iptl->line[iptl->buffer_pos] = c;
+//			iptl->line[iptl->buffer_pos + 1] = '\0';
+//			++cursor;
+//			++iptl->buffer_pos;
+//		}
+//		
+//		// buffer²»¹»£¬¼Ó´óÁ¦¶È£¬ÔÙ·ÖÅäÒ»¿ébuffer
+//		if (iptl->buffer_pos >= INPUT_BUFFER_SIZE * iptl->buffer_block_cnt-1) {
+//			iptl = malloc_InputLine(iptl, REALLOC_INPUTLINE);
+//		}
+//	}
+//
+//	// ±ã½ÝÊµÏÖ,ÎÞ·¨ÄÃµ½bufsize
+//	/*
+//	char* line = NULL;
+//	size_t bufsize = 0;
+//	getline(&line, &bufsize, stdin);
+//	return line;
+//	*/
+//}
 
 void shell_loop() {
 		do {
 			init_command();
-			get_string(NULL);
+			get_string();
 			// Ã»ÓÐÊäÈë¾Í²»´¦Àí
 			if (iptl->buffer_pos == 0) {
 				free_InputLine(iptl);
@@ -266,8 +273,8 @@ void shell_loop() {
 				continue;
 			}
 			free_InputLine(iptl);
-		        printf("11%s11\n", cmds[0]->argv[0]);
-                        printf("11%s11\n", cmds[0]->argv[1]);
+			printf("11%s11\n", cmds[0]->argv[0]);
+			printf("11%s11\n", cmds[0]->argv[1]);
 			if (!execute(cmds)) {
 				free_InputLine(iptl);
 				free_cmds(cmds);
