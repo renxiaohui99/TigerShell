@@ -69,6 +69,7 @@ void free_cmds(CMD** cmds) {
 }
 
 void init_shell() {
+	read_history(NULL);
 }
 
 void init_command() {
@@ -146,15 +147,12 @@ void get_string() {
 		CLOSE
 	);
 
-	// get string and history
-	read_history(NULL);
+	
+	// get string
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	iptl->line = readline(header);
 	iptl->buffer_pos = strlen(iptl->line);
-	if (iptl->buffer_pos != 0) {
-		add_history(iptl->line);
-		write_history(NULL);
-	}
+	
 
 	if (header != NULL) {
 		free(header);
@@ -170,17 +168,26 @@ void get_string() {
 	}
 }
 
-
+bool check_quit(char *str) {
+	if (strcmp(str,"quit") == 0)return true;
+	return false;
+}
 void shell_loop() {
 		do {
+			
 			init_command();
 			get_string();
-			if (iptl->buffer_pos == 0) {
+			set_background();
+			delete_space();
+			if (strlen(iptl->line)==0) {
 				free_InputLine(iptl);
 				continue;
 			}
-			set_background();
-			delete_space();
+			add_history(iptl->line);
+			if (check_quit(iptl->line)) {
+				free_InputLine(iptl);
+				break;
+			}
 			split();
 			if (!fill_cmds()) {
 				free_InputLine(iptl);
@@ -188,6 +195,7 @@ void shell_loop() {
 				continue;
 			}
 			free_InputLine(iptl);
+			
 			if (!execute(cmds)) {
 				free_cmds(cmds);
 				continue;
@@ -200,5 +208,6 @@ void shell_loop() {
 int main(int argc, char* argv[]) {
 	init_shell();
 	shell_loop();
+	write_history(NULL);
 	return EXIT_SUCCESS;
 }

@@ -9,3 +9,4 @@ rm sly.o
 rm execute.o
 rm main.o
 rm searchfile.o
+rm ~/.history
