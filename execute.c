@@ -37,7 +37,7 @@ bool history(CMD* cmd) {
             fprintf(stdout, "%s\n", his[i]->line);
         }
     }else if (cmd->argv[2] == NULL) {
-        for (size_t j = 1; j < strlen(cmd->argv[1]); ++j) {
+        for (size_t j = 0; j < strlen(cmd->argv[1]); ++j) {
             if (cmd->argv[1][j] < '0' || cmd->argv[1][j]>'9') {
                 fprintf(stderr, "history: unexpected arguments!\n");
                 return false;
