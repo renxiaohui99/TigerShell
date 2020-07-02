@@ -215,6 +215,6 @@ void shell_loop() {
 int main(int argc, char* argv[]) {
 	init_shell();
 	shell_loop();
-	write_history("");
+	write_history(NULL);
 	return EXIT_SUCCESS;
 }
