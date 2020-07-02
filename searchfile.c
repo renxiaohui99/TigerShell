@@ -10,7 +10,7 @@
 #include<dirent.h>
 
 bool scanfile(char* path,const char* filename){
-	printf("%s中搜索%s\n", path, filename);
+//	printf("%s中搜索%s\n", path, filename);
 	bool res = false;
 	DIR* dir = opendir(path);
 	struct dirent* entry;
@@ -37,14 +37,15 @@ const char* searchfile(const char* filename){
 	}
 	//strtok具有状态！线程不安全，并且会改变原字符串！
 	//printf("=%s\n", filename);
-	path = strtok(path, ":");
+	char* saveptr;
+	path = strtok_r(path, ":", &saveptr);
 	bool res = false;
 	while(path!=NULL){
 		if(scanfile(path, filename)){
 			res = true;
 			break;
 		}
-		path = strtok(NULL, ":");
+		path = strtok_r(NULL, ":", &saveptr);
 	}
 	//
 	if(res){
