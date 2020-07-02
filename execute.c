@@ -32,9 +32,15 @@ bool cd(CMD* cmd){
 bool history(CMD* cmd) {
     if (cmd->argv[1] == NULL) {
         HIST_ENTRY** his = history_list();
-		for (size_t i = 0; his[i] != NULL; ++i) {
-            fprintf(stdout, "%s\n", his[i]->line);
-        }
+		if (his != NULL) {
+			for (size_t i = 0; his[i] != NULL; ++i) {
+				fprintf(stdout, "%s\n", his[i]->line);
+			}
+		}
+		else {
+			fprintf(stdout, "no history records.\n");
+			return false;
+		}
     }else if (cmd->argv[2] == NULL) {
         for (size_t j = 0; j < strlen(cmd->argv[1]); ++j) {
             if (cmd->argv[1][j] < '0' || cmd->argv[1][j]>'9') {
@@ -43,13 +49,19 @@ bool history(CMD* cmd) {
             }
         }
 		HIST_ENTRY** his = history_list();
-        size_t i = 0;
-        for (; his[i] != NULL; ++i);
-        size_t dest_pos = i - atoi(cmd->argv[1]);
-        dest_pos = dest_pos > 0 ? dest_pos : 0;
-        for (i = dest_pos; his[i] != NULL; ++i) {
-            fprintf(stdout, "%s\n", his[i]->line);
-        }
+		if (his!=NULL) {
+			size_t i = 0;
+			for (; his[i] != NULL; ++i);
+			long int dest_pos = i - atoi(cmd->argv[1]);
+			dest_pos = dest_pos > 0 ? dest_pos : 0;
+			for (i = dest_pos; his[i] != NULL; ++i) {
+				fprintf(stdout, "%s\n", his[i]->line);
+			}
+		}
+		else {
+			fprintf(stdout, "no history records.\n");
+			return false;
+		}
     }else {
         fprintf(stderr, "history: too many arguments!\n");
         return false;

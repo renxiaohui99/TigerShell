@@ -71,6 +71,7 @@ void delete_space()
     {
         iptl->buffer_pos--;
     }
+    afterDelate[iptl->buffer_pos] = '\0';
     char* tmp = iptl->line;
     iptl->line = afterDelate;
     free(tmp);
