@@ -30,19 +30,53 @@ bool cd(CMD* cmd){
     }
 }
 
+bool history(CMD* cmd) {
+    if (cmd->argv[1] == NULL) {
+        HIST_ENTRY** his = history_list();
+		for (size_t i = 0; his[i] != NULL; ++i) {
+            fprintf(stdout, "%s\n", his[i]->line);
+        }
+    }else if (cmd->argv[2] == NULL) {
+        for (size_t j = 1; j < strlen(cmd->argv[1]); ++j) {
+            if (cmd->argv[1][j] < '0' || cmd->argv[1][j]>'9') {
+                fprintf(stderr, "history: unexpected arguments!\n");
+                return false;
+            }
+        }
+		HIST_ENTRY** his = history_list();
+        size_t i = 0;
+        for (; his[i] != NULL; ++i);
+        size_t dest_pos = i - atoi(cmd->argv[1]);
+        dest_pos = dest_pos > 0 ? dest_pos : 0;
+        for (i = dest_pos; his[i] != NULL; ++i) {
+            fprintf(stdout, "%s\n", his[i]->line);
+        }
+    }else {
+        fprintf(stderr, "history: too many arguments!\n");
+        return false;
+    }
+    return true;
+}
+
 int innerCMD(CMD* cmd){
     //0: 内建，执行成功
     //-1： 内建，执行失败
     //1： 不是内建
     int num;
     if(strcmp(cmd->cmd, "cd") == 0){
-        
         if(cd(cmd)){
             num = 0;
         }else{
             num = -1;
         }
-    }else{
+    }else if (strcmp(cmd->cmd,"history")==0) {
+        if (history(cmd)) {
+            num = 0;
+        }else {
+            num = -1;
+        }
+    }
+    else{
         num = 1;
     }
     return num;
