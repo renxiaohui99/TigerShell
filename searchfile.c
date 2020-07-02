@@ -10,6 +10,7 @@
 #include<dirent.h>
 
 bool scanfile(char* path,const char* filename){
+	printf("%s中搜索%s\n", path, filename);
 	bool res = false;
 	DIR* dir = opendir(path);
 	struct dirent* entry;

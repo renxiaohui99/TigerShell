@@ -191,6 +191,7 @@ bool do_execute(const char* path,CMD* cmd){
 				isSuccess = false;
 				break;
 			}else if(num == 1){
+				printf("命令类型判断正确\n");
 				//不是内建命令
 				if(strcmp(cmds[i]->cmd,".") == 0){
 					if(-1 == access(cmds[i]->argv[1], X_OK)){
