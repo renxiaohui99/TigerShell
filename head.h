@@ -13,6 +13,14 @@
 #define maxWordNum 256
 #define maxWordSize 64
 
+
+/*
+ *isBackground: bool, 是否后台运行
+ *infile: FILE*, 输入, 对于“|”，由调用程序fopen一个临时buf
+ *outfile: FILE*， 输出
+ *cmd: char*, 命令
+ *argv: char**, 参数，[0] = 命令, [-1] = NULL
+ */
 typedef struct CMDStruct {
 
 	FILE* infile;
