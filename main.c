@@ -124,6 +124,12 @@ void get_string() {
 		dir = rdir;
 		rdir = NULL;
 	}
+	char* user_iden = NULL;
+	if(getuid() == 0){
+		user_iden = "#";
+	}else{
+		user_iden = "$";
+	}
 	
 	char* header = (char*)malloc(MAX_HEADER_SIZE * sizeof(char));
 	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
@@ -149,7 +155,7 @@ void get_string() {
 		dir,
 		CLOSE,
 		BEGIN(33, 40),
-		"# ",
+		user_iden,
 		CLOSE
 	);
 
