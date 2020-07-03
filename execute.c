@@ -111,6 +111,25 @@ int innerCMD(CMD* cmd){
     return num;
 
 }
+void cleanCMD(CMD* cmd){
+	char* arg = NULL;
+	int ax = 1;
+	while((arg = cmd->argv[ax]) != NULL){
+		if(arg[0] == '$'){
+			char* rv = getenv(&arg[1]);
+			if(rv != NULL){
+				char* rvcp = (char* )malloc((strlen(rv)+1)*sizeof(char));
+				strcpy(rvcp, rv);
+				cmd->argv[ax] = rvcp;
+				//printf("%s\n", arg);
+				//???
+				//free(arg);
+				arg = NULL;
+			}
+		}
+		++ax;
+	}
+}
 
 bool do_execute(const char* path,CMD* cmd){
 	pid_t pid = fork();
@@ -182,6 +201,7 @@ bool do_execute(const char* path,CMD* cmd){
 	bool execute(CMD** cmds){
 		int isSuccess = true;
 		for (size_t i = 0; i < pipeNum + 1; ++i) {
+			cleanCMD(cmds[i]);
 			int num = innerCMD(cmds[i]);
 			if(num == 0){
 				//是内建命令，且执行成功
