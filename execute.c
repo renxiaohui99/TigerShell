@@ -47,7 +47,7 @@ bool history(CMD* cmd) {
 			}
 		}
 		else {
-			fprintf(stdout, "no history records.\n");
+			fprintf(stdout, "history: no history records.\n");
 			return false;
 		}
     }else if (cmd->argv[2] == NULL) {
@@ -77,7 +77,7 @@ bool history(CMD* cmd) {
 			}
 		}
 		else {
-			fprintf(stdout, "no history records.\n");
+			fprintf(stdout, "history: no history records.\n");
 			return false;
 		}
     }else {
@@ -118,13 +118,7 @@ void cleanCMD(CMD* cmd){
 		if(arg[0] == '$'){
 			char* rv = getenv(&arg[1]);
 			if(rv != NULL){
-				char* rvcp = (char* )malloc((strlen(rv)+1)*sizeof(char));
-				strcpy(rvcp, rv);
-				cmd->argv[ax] = rvcp;
-				//printf("%s\n", arg);
-				//???
-				//free(arg);
-				arg = NULL;
+				strcpy(cmd->argv[ax], rv);
 			}
 		}
 		++ax;
