@@ -8,69 +8,65 @@
 #include<sys/wait.h>
 #include<string.h>
 #include <time.h>
+void store_alias(){
+	FILE* af = fopen("./.alias", "w");
+	if(af!=NULL){
+		for(int i=0;i<atx;++i){
+			fprintf(af, "%s %s\n", alias_tbl[i]->fc, alias_tbl[i]->rc);
+		}
+	}
+	fclose(af);
+	af = NULL;
+}
+void remove_alias(char* fc){
+	//int pos=-1;
+	for(int i=0;i<atx;++i){
+		if(strcmp(alias_tbl[i]->fc, fc) == 0){
+			for(int j=i;j<atx;++j){
+				if(j == atx-1){
+					alias_tbl[j] = NULL;
+				}else{
+					alias_tbl[j] = alias_tbl[j+1];
+				}
+			}
+			--atx;
+			store_alias();
+		}
+	}
+}
+/*
+   void e_tmp(){
 
+
+   }
+ */
 bool addAlias(char* fc, char* rc){
-//		extern int atx;
-//	extern struct Alias* alias_tbl[kMaxAtx];
-if(strlen(rc) == 0){
+	//		extern int atx;
+	//	extern struct Alias* alias_tbl[kMaxAtx];
+	if(strlen(rc) == 0){
 		return false;
 	}
 	if(atx<kMaxAtx){
 
 		struct Alias* alias_new = (struct Alias*)malloc(sizeof(struct Alias));
 		alias_new->fc = (char* )malloc((strlen(fc)+1)*sizeof(char));
-		strcmp(alias_new->fc, fc);
-		//alias_new->rc = (char* )malloc((strlen(rc)+1)*sizeof(char));
-		//strcmp(alias_new->rc, rc);
+		strcpy(alias_new->fc, fc);
+		alias_new->rc = (char* )malloc((strlen(rc)+1)*sizeof(char));
+		strcpy(alias_new->rc, rc);
 		//bp2
-		printf("bp2\n");
-		iptl->line = rc;
-		iptl->buffer_pos = strlen(iptl->line);
 
-		set_background();
-		delete_space();
-		CMD** alias_cmds;
-		printf("bp3\n");
-		if (strlen(iptl->line)==0) {
-			
-			//free_InputLine(iptl);
-			//alias_cmds = NULL;
-		}else{
-			split();
-			CMD** cmds_tmp = cmds;
-			if (!fill_cmds()) {
-				free_InputLine(iptl);
-				free_cmds(cmds);
-				cmds = cmds_tmp;
-				return false;
-			}else{
-
-
-				free_InputLine(iptl);
-
-				//if (!execute(cmds)) {
-				//	printf("execute failed.\n");
-				//	free_cmds(cmds);
-				//	cmds->cmd_tmp;
-				//
-				//}else{
-					alias_new->rc = cmds;
-					//free_cmds(cmds);
-					cmds=cmds_tmp;
-				//}
-			}
-		}
-		
 		//保存现在的cmds
 		//解析tc指向的字符串
 		//执行tc解析出来的命令
 		//还原cmds
 
 
-		++atx;
+
 
 		alias_tbl[atx] = alias_new;
-		printf("bp4\n");
+		++atx;
+		store_alias();
+		//printf("bp4\n");
 		return true;
 	}else{
 
@@ -81,6 +77,13 @@ if(strlen(rc) == 0){
 }
 
 bool alias(CMD* cmd){
+	if(cmd->argv[1] == NULL){
+		for(int i=0;i<atx;++i){
+			printf("%s:%s\n", alias_tbl[i]->fc, alias_tbl[i]->rc);
+		}
+		return true;
+	}
+	
 	char* fc = NULL; //fake cmd
 	char* rc = (char*)malloc(MAX_INPUTLINE_SIZE*sizeof(char)); //real cmd
 	int ax = 0;
@@ -94,7 +97,6 @@ bool alias(CMD* cmd){
 		cmd->argv[1][ax] = '\0';
 		fc = &cmd->argv[1][0];
 		strcpy(rc, &cmd->argv[1][ax+1]);
-		printf("rc = %s|", rc);
 		//rc = &cmd->argv[1][ax+1];
 		if(rc[0]!='\"'){
 			printf("alias: alias <name>=\"<cmd>\".\n");
@@ -105,9 +107,7 @@ bool alias(CMD* cmd){
 				printf("alias: alias <name>=\"<cmd>\".\n");
 			}else{
 				//bp1
-				printf("bp1\n");
 				rc[strlen(rc)-1] = '\0';
-
 
 				if(addAlias(fc, rc+1)){
 					return true;
@@ -221,12 +221,22 @@ int innerCMD(CMD* cmd){
 		}else{
 			num = -1;
 		}
+	}else if(strcmp(cmd->cmd, "unalias") == 0){
+		if(cmd->argv[1] == NULL){
+			printf("unalias: unalias alias\n");
+			
+		}else{
+			remove_alias(cmd->argv[1]);
+			
+		}
+		num = 0;
 	}else{
 		num = 1;
 		//查询是否是alias命令
 		for(int i=0;i<atx;++i){
 			if(strcmp(cmd->cmd, alias_tbl[i]->fc)==0){
 				num = 2;
+			
 			}	
 		}
 
@@ -248,11 +258,57 @@ void cleanCMD(CMD* cmd){
 	}
 }
 bool alias_execute(char* fc){
-
 	for(int i=0;i<atx;++i){
 		if(strcmp(alias_tbl[i]->fc, fc) == 0){
+		
+			char* ttmp = (char*) malloc((1+strlen(alias_tbl[i]->rc))*sizeof(char));
+			if(ttmp == NULL){
+				return false;
+			}
+			strcpy(ttmp, alias_tbl[i]->rc);
+		
 
-			return execute(alias_tbl[i]->rc);
+			iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+			iptl->line = ttmp;
+		
+			iptl->buffer_pos = strlen(iptl->line);
+
+			set_background();
+			delete_space();
+			CMD** alias_cmds;
+			if (strlen(iptl->line)==0) {
+			
+				return true;	
+				//free_InputLine(iptl);
+				//alias_cmds = NULL;
+			}else{
+				split();
+				CMD** cmds_tmp = cmds;
+				if (!fill_cmds()) {
+					free_InputLine(iptl);
+					free_cmds(cmds);
+					cmds = cmds_tmp;
+					return false;
+				}else{
+
+						
+					free_InputLine(iptl);
+					if (!execute(cmds)) {
+						printf("execute failed.\n");
+						free_cmds(cmds);
+						cmds=cmds_tmp;
+						return false;
+					}else{
+						//alias_new->rc = cmds;
+						//store_alias();
+						//free_cmds(cmds);
+						cmds=cmds_tmp;
+						return true;
+					}
+				}
+			}
+			//return true;
+			//return execute(alias_tbl[i]->rc);
 		}
 	}
 	return false;

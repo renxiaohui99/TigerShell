@@ -160,7 +160,7 @@ bool fill_cmds()
         if (w.words[i][0] == '|')
         {
             pipe[pipeNum] = i;
-            printf("pipe[%d]=%d\n", pipeNum, pipe[pipeNum]);
+            //printf("pipe[%d]=%d\n", pipeNum, pipe[pipeNum]);
             pipeNum++;
         }
     }
@@ -214,7 +214,7 @@ bool fill_cmds()
                 }    
             }
         }
-        printf("argvNum=%d\n", argvNum);
+        //printf("argvNum=%d\n", argvNum);
         cmd->argv = (char**)malloc((argvNum+1) * sizeof(char*));
         cmd->argv[argvNum] = NULL;
         for (int j = 0, k = 0; j < w.wordsNum; j++)
@@ -222,7 +222,7 @@ bool fill_cmds()
             if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
             {
                 cmd->argv[k] = w.words[j];
-                printf("argv[%d]=%s\n", k, cmd->argv[k]);
+                //printf("argv[%d]=%s\n", k, cmd->argv[k]);
                 k++;
             }
             else {
@@ -230,7 +230,7 @@ bool fill_cmds()
             }
         }
         cmd->isBackground = is_background;
-        printf("isBackground=%d\n", cmd->isBackground);
+        //printf("isBackground=%d\n", cmd->isBackground);
         cmds[0] = cmd;
     }
 
@@ -245,14 +245,14 @@ bool fill_cmds()
                 cmd->cmd = w.words[0];
                 cmd->outfile = NULL;
                 cmd->infile = NULL;
-                printf("n=%d outfile=buffile\n", n);
+                //printf("n=%d outfile=buffile\n", n);
                 cmd->outfile = fopen("buffile", "w+");
                 for (int j = 0; j < pipe[n]; j++)
                 {
                     if (strcmp(w.words[j], "<<") == 0)
                     {
                         ++j;
-                        printf("n=%d infile=%s\n", n, w.words[j]);
+                       // printf("n=%d infile=%s\n", n, w.words[j]);
                         cmd->infile = fopen(w.words[j], "r");
                     }
                     else
@@ -266,7 +266,7 @@ bool fill_cmds()
                         }
                     }
                 }
-                printf("n=%d argvNum=%d\n", n, argvNum);
+                //printf("n=%d argvNum=%d\n", n, argvNum);
                 cmd->argv = (char**)malloc((argvNum+1) * sizeof(char*));
                 cmd->argv[argvNum] = NULL;
                 for (int j = 0, k = 0; j < pipe[n]; j++)
@@ -274,7 +274,7 @@ bool fill_cmds()
                     if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
                     {
                         cmd->argv[k] = w.words[j];
-                        printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
+                        //printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
                         k++;
                     }
                     else {
@@ -282,7 +282,7 @@ bool fill_cmds()
                     }
                 }
                 cmd->isBackground = is_background;
-                printf("n=%d isBackground=%d\n", n, cmd->isBackground);
+                //printf("n=%d isBackground=%d\n", n, cmd->isBackground);
                 cmds[n] = cmd;
             }
             else {
@@ -293,14 +293,14 @@ bool fill_cmds()
                     cmd->cmd = w.words[pipe[pipeNum - 1] + 1];
                     cmd->outfile = NULL;
                     cmd->infile = NULL;
-                    printf("n=%d infile=buffile\n", n);
+                    //printf("n=%d infile=buffile\n", n);
                     cmd->infile = fopen("buffile", "r+");
                     for (int j = pipe[pipeNum - 1] + 1; j < w.wordsNum; j++)
                     {
                         if (strcmp(w.words[j], ">>") == 0)
                         {
                             ++j;
-                            printf("n=%d outfile=%s\n", n, w.words[j]);
+                            //printf("n=%d outfile=%s\n", n, w.words[j]);
                             cmd->outfile = fopen(w.words[j], "w");
                         }
                         else {
@@ -313,7 +313,7 @@ bool fill_cmds()
                             }
                         }  
                     }
-                    printf("n=%d argvNum=%d\n", n, argvNum);
+                    //printf("n=%d argvNum=%d\n", n, argvNum);
                     cmd->argv = (char**)malloc((argvNum +1)* sizeof(char*));
                     cmd->argv[argvNum] = NULL;
                     for (int j = pipe[pipeNum - 1] + 1, k = 0; j < w.wordsNum; j++)
@@ -321,7 +321,7 @@ bool fill_cmds()
                         if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
                         {
                             cmd->argv[k] = w.words[j];
-                            printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
+                            //printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
                             k++;
                         }
                         else {
@@ -329,7 +329,7 @@ bool fill_cmds()
                         }
                     }
                     cmd->isBackground = is_background;
-                    printf("n=%d isBackground=%d\n", n, cmd->isBackground);
+                    //printf("n=%d isBackground=%d\n", n, cmd->isBackground);
                     cmds[n] = cmd;
                 }
                 else {
@@ -338,15 +338,15 @@ bool fill_cmds()
                     cmd->cmd = w.words[pipe[n - 1] + 1];
                     cmd->outfile = NULL;
                     cmd->infile = NULL;
-                    printf("n=%d infile=buffile\n", n);
+                    //printf("n=%d infile=buffile\n", n);
                     cmd->infile = fopen("buffile", "r+");
-                    printf("n=%d outfile=buffile\n", n);
+                    //printf("n=%d outfile=buffile\n", n);
                     cmd->outfile = fopen("buffile", "w+");
                     for (int j = pipe[n - 1] + 1; j < pipe[n]; j++)
                     {
                         argvNum++;
                     }
-                    printf("n=%d argvNum=%d\n", n, argvNum);
+                    //printf("n=%d argvNum=%d\n", n, argvNum);
                     cmd->argv = (char**)malloc((argvNum +1)* sizeof(char*));
                     cmd->argv[argvNum] = NULL;
                     for (int j = pipe[n - 1] + 1, k = 0; j < pipe[n]; j++)
@@ -354,7 +354,7 @@ bool fill_cmds()
                         if (strcmp(w.words[j], ">>") != 0 && strcmp(w.words[j], "<<") != 0 && strcmp(w.words[j], "&") != 0)
                         {
                             cmd->argv[k] = w.words[j];
-                            printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
+                            //printf("n=%d argv[%d]=%s\n", n, k, cmd->argv[k]);
                             k++;
                         }
                         else {
@@ -368,7 +368,7 @@ bool fill_cmds()
                         }
                     }
                     cmd->isBackground = is_background;
-                    printf("n=%d isBackground=%d\n", n, cmd->isBackground);
+                    //printf("n=%d isBackground=%d\n", n, cmd->isBackground);
                     cmds[n] = cmd;
                 }
             }

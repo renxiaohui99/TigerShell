@@ -46,9 +46,10 @@ typedef struct Word
 } Word;
 struct Alias{
 	char* fc;
-	CMD** rc;
+	char* rc;
 };
 
+InputLine* malloc_InputLine(InputLine* input, int malloc_type);
 void free_InputLine(InputLine* input);
 void free_cmds(CMD** cmds); 
 void init_shell();

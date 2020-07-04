@@ -19,23 +19,23 @@ InputLine* malloc_InputLine(InputLine* input, int malloc_type)
 {
 	switch (malloc_type)
 	{
-	case MALLOC_INPUTLINE:
-		input = malloc(sizeof(InputLine));
-		if (!input) {
-			fprintf(stderr, "memory out\n");
+		case MALLOC_INPUTLINE:
+			input = malloc(sizeof(InputLine));
+			if (!input) {
+				fprintf(stderr, "memory out\n");
+				exit(EXIT_FAILURE);
+			}
+			input->buffer_pos = 0;
+			input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
+			if (!input->line) {
+				fprintf(stderr, "memory out\n");
+				exit(EXIT_FAILURE);
+			}
+			return input;
+		default:
+			fprintf(stderr, "error malloc type in malloc iptl.\n");
 			exit(EXIT_FAILURE);
-		}
-		input->buffer_pos = 0;
-		input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
-		if (!input->line) {
-			fprintf(stderr, "memory out\n");
-			exit(EXIT_FAILURE);
-		}
-		return input;
-	default:
-		fprintf(stderr, "error malloc type in malloc iptl.\n");
-		exit(EXIT_FAILURE);
-		break;
+			break;
 	}
 }
 void free_InputLine(InputLine* input) {
@@ -72,11 +72,35 @@ void free_cmds(CMD** cmds) {
 		cmds = NULL;
 	}
 }
+void read_alias(){
 
+	FILE* af = fopen("./.alias", "r");
+	if(af == NULL){
+		return ;
+	}else{
+		char* fc=(char*)malloc(MAX_INPUTLINE_SIZE*sizeof(char));
+		char* rc=(char*)malloc(MAX_INPUTLINE_SIZE*sizeof(char));
+
+		while((fscanf(af, "%s", fc))!=EOF){
+			fgets(rc, MAX_INPUTLINE_SIZE,af);
+			rc[strlen(rc)-1] = '\0';
+			//printf("%s: %s\n", fc, rc);
+			struct Alias* nali = (struct Alias*)malloc(sizeof(struct Alias));
+			nali->fc = (char*)malloc((strlen(fc)+1)*sizeof(char));
+			strcpy(nali->fc, fc);
+			nali->rc = (char*)malloc((strlen(rc)+1)*sizeof(char));
+			strcpy(nali->rc, rc);
+			alias_tbl[atx] = nali;
+			atx++;
+		}
+	}
+
+}
 void init_shell() {
 	read_history(NULL);
 	signal(SIGINT, handleSIGINT);
 	atx = 0;
+	read_alias();
 	//extern struct Alias* alias_tbl[kMaxAtx];
 }
 
@@ -87,7 +111,7 @@ void init_command() {
 
 
 void get_string() {
-	
+
 	char* user = getenv("USER");
 	char* hostname = malloc(sizeof(char) * MAX_HOSTNAME_SIZE);
 	gethostname(hostname, sizeof(hostname));
@@ -132,41 +156,41 @@ void get_string() {
 	}else{
 		user_iden = "$";
 	}
-	
+
 	char* header = (char*)malloc(MAX_HEADER_SIZE * sizeof(char));
 	sprintf(header, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-		BEGIN(33, 40),
-		"[",
-		CLOSE,
-		BEGIN(36, 40),
-		user,
-		CLOSE,
-		BEGIN(33, 40),
-		"][",
-		CLOSE,
-		BEGIN(36, 40),
-		hostname,
-		CLOSE,
-		BEGIN(33, 40),
-		"]",
-		CLOSE,
-		BEGIN(33, 40),
-		":",
-		CLOSE,
-		BEGIN(36, 40),
-		dir,
-		CLOSE,
-		BEGIN(33, 40),
-		user_iden,
-		CLOSE
-	);
+			BEGIN(33, 40),
+			"[",
+			CLOSE,
+			BEGIN(36, 40),
+			user,
+			CLOSE,
+			BEGIN(33, 40),
+			"][",
+			CLOSE,
+			BEGIN(36, 40),
+			hostname,
+			CLOSE,
+			BEGIN(33, 40),
+			"]",
+			CLOSE,
+			BEGIN(33, 40),
+			":",
+			CLOSE,
+			BEGIN(36, 40),
+			dir,
+			CLOSE,
+			BEGIN(33, 40),
+			user_iden,
+			CLOSE
+				);
 
-	
+
 	// get string
 	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
 	iptl->line = readline(header);
 	iptl->buffer_pos = strlen(iptl->line);
-	
+
 
 	if (header != NULL) {
 		free(header);
@@ -187,36 +211,36 @@ bool check_quit(char *str) {
 	return false;
 }
 void shell_loop() {
-		do {
-			
-			init_command();
-			get_string();
-			set_background();
-			delete_space();
-			if (strlen(iptl->line)==0) {
-				free_InputLine(iptl);
-				continue;
-			}
-			add_history(iptl->line);
-			if (check_quit(iptl->line)) {
-				free_InputLine(iptl);
-				break;
-			}
-			split();
-			if (!fill_cmds()) {
-				free_InputLine(iptl);
-				free_cmds(cmds);
-				continue;
-			}
+	do {
+
+		init_command();
+		get_string();
+		set_background();
+		delete_space();
+		if (strlen(iptl->line)==0) {
 			free_InputLine(iptl);
-			
-			if (!execute(cmds)) {
-				printf("execute failed.\n");
-				free_cmds(cmds);
-				continue;
-			}
+			continue;
+		}
+		add_history(iptl->line);
+		if (check_quit(iptl->line)) {
+			free_InputLine(iptl);
+			break;
+		}
+		split();
+		if (!fill_cmds()) {
+			free_InputLine(iptl);
 			free_cmds(cmds);
-		} while (1);
+			continue;
+		}
+		free_InputLine(iptl);
+
+		if (!execute(cmds)) {
+			printf("execute failed.\n");
+			free_cmds(cmds);
+			continue;
+		}
+		free_cmds(cmds);
+	} while (1);
 }
 
 
