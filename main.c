@@ -76,6 +76,8 @@ void free_cmds(CMD** cmds) {
 void init_shell() {
 	read_history(NULL);
 	signal(SIGINT, handleSIGINT);
+	atx = 0;
+	//extern struct Alias* alias_tbl[kMaxAtx];
 }
 
 void init_command() {
@@ -209,7 +211,7 @@ void shell_loop() {
 			free_InputLine(iptl);
 			
 			if (!execute(cmds)) {
-				printf("execute ok.\n");
+				printf("execute failed.\n");
 				free_cmds(cmds);
 				continue;
 			}

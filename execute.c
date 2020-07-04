@@ -10,6 +10,11 @@
 #include <time.h>
 
 bool addAlias(char* fc, char* rc){
+//		extern int atx;
+//	extern struct Alias* alias_tbl[kMaxAtx];
+if(strlen(rc) == 0){
+		return false;
+	}
 	if(atx<kMaxAtx){
 
 		struct Alias* alias_new = (struct Alias*)malloc(sizeof(struct Alias));
@@ -17,16 +22,55 @@ bool addAlias(char* fc, char* rc){
 		strcmp(alias_new->fc, fc);
 		//alias_new->rc = (char* )malloc((strlen(rc)+1)*sizeof(char));
 		//strcmp(alias_new->rc, rc);
+		//bp2
+		printf("bp2\n");
+		iptl->line = rc;
+		iptl->buffer_pos = strlen(iptl->line);
+
+		set_background();
+		delete_space();
+		CMD** alias_cmds;
+		printf("bp3\n");
+		if (strlen(iptl->line)==0) {
+			
+			//free_InputLine(iptl);
+			//alias_cmds = NULL;
+		}else{
+			split();
+			CMD** cmds_tmp = cmds;
+			if (!fill_cmds()) {
+				free_InputLine(iptl);
+				free_cmds(cmds);
+				cmds = cmds_tmp;
+				return false;
+			}else{
+
+
+				free_InputLine(iptl);
+
+				//if (!execute(cmds)) {
+				//	printf("execute failed.\n");
+				//	free_cmds(cmds);
+				//	cmds->cmd_tmp;
+				//
+				//}else{
+					alias_new->rc = cmds;
+					//free_cmds(cmds);
+					cmds=cmds_tmp;
+				//}
+			}
+		}
 		
 		//保存现在的cmds
 		//解析tc指向的字符串
 		//执行tc解析出来的命令
 		//还原cmds
-		
-		
+
+
 		++atx;
 
 		alias_tbl[atx] = alias_new;
+		printf("bp4\n");
 		return true;
 	}else{
 
@@ -38,28 +82,32 @@ bool addAlias(char* fc, char* rc){
 
 bool alias(CMD* cmd){
 	char* fc = NULL; //fake cmd
-	char* rc = NULL; //real cmd
+	char* rc = (char*)malloc(MAX_INPUTLINE_SIZE*sizeof(char)); //real cmd
 	int ax = 0;
 	while(cmd->argv[1][ax] != '=' && cmd->argv[1][ax] != '\0'){
 		++ax;
 	}
 	if(cmd->argv[1][ax] == '\0'){
-		printf("alias: alias <name>='<cmd>'.\n");
+		printf("alias: alias <name>=\"<cmd>\".\n");
 		return false;
 	}else{
 		cmd->argv[1][ax] = '\0';
 		fc = &cmd->argv[1][0];
-		rc = &cmd->argv[1][ax+1];
-		if(rc[0]!='\''&&rc[0]!='\"'){
-			printf("alias: alias <name>='<cmd>'.\n");
+		strcpy(rc, &cmd->argv[1][ax+1]);
+		printf("rc = %s|", rc);
+		//rc = &cmd->argv[1][ax+1];
+		if(rc[0]!='\"'){
+			printf("alias: alias <name>=\"<cmd>\".\n");
 
 		}else{
-			if(rc[strlen(rc-1)]!='\''&&rc[strlen(rc-1)]!='\"'){
+			if(rc[strlen(rc-1)]!='\"'){
 
-				printf("alias: alias <name>='<cmd>'.\n");
+				printf("alias: alias <name>=\"<cmd>\".\n");
 			}else{
+				//bp1
+				printf("bp1\n");
 				rc[strlen(rc)-1] = '\0';
-				
+
 
 				if(addAlias(fc, rc+1)){
 					return true;
@@ -167,8 +215,13 @@ int innerCMD(CMD* cmd){
 		}else {
 			num = -1;
 		}
-	}
-	else{
+	}else if(strcmp(cmd->cmd, "alias") == 0){
+		if(alias(cmd)){
+			num = 0;
+		}else{
+			num = -1;
+		}
+	}else{
 		num = 1;
 		//查询是否是alias命令
 		for(int i=0;i<atx;++i){
@@ -176,7 +229,7 @@ int innerCMD(CMD* cmd){
 				num = 2;
 			}	
 		}
-		
+
 	}
 	return num;
 
@@ -198,8 +251,8 @@ bool alias_execute(char* fc){
 
 	for(int i=0;i<atx;++i){
 		if(strcmp(alias_tbl[i]->fc, fc) == 0){
-		
-			return execute(alias_tbl[i]->tc);
+
+			return execute(alias_tbl[i]->rc);
 		}
 	}
 	return false;
@@ -292,7 +345,7 @@ bool do_execute(const char* path,CMD* cmd){
 				}else{
 					isSuccess = false;
 				}
-	
+
 
 			}else if(num == 1){
 				//printf("命令类型判断正确\n");

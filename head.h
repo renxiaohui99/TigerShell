@@ -46,9 +46,11 @@ typedef struct Word
 } Word;
 struct Alias{
 	char* fc;
-	char* rc;
+	CMD** rc;
 };
 
+void free_InputLine(InputLine* input);
+void free_cmds(CMD** cmds); 
 void init_shell();
 void init_command();
 void get_string();
@@ -71,6 +73,6 @@ bool is_background; //后台运行标识符
 int pipeNum;
 //const int kMaxAlias = 1024;
 struct Alias* alias_tbl[kMaxAtx];
-int atx=0;
+int atx;
 
 #endif
