@@ -46,6 +46,18 @@ bool addAlias(char* fc, char* rc){
 	if(strlen(rc) == 0){
 		return false;
 	}
+	for(int i=0;i<atx;++i){
+	
+		if(strcmp(alias_tbl[i]->fc, fc)==0){
+		
+			free(alias_tbl[i]->rc);
+			alias_tbl[i]->rc = (char* )malloc((strlen(rc)+1)*sizeof(char));
+			strcpy(alias_tbl[i]->rc, rc);
+			store_alias();
+			return true;
+
+		}
+	}
 	if(atx<kMaxAtx){
 
 		struct Alias* alias_new = (struct Alias*)malloc(sizeof(struct Alias));
@@ -102,12 +114,13 @@ bool alias(CMD* cmd){
 			printf("alias: alias <name>=\"<cmd>\".\n");
 
 		}else{
-			if(rc[strlen(rc-1)]!='\"'){
+			if(rc[strlen(rc)-1]!='\"'){
 
 				printf("alias: alias <name>=\"<cmd>\".\n");
 			}else{
 				//bp1
 				rc[strlen(rc)-1] = '\0';
+				
 
 				if(addAlias(fc, rc+1)){
 					return true;
