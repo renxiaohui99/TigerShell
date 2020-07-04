@@ -13,8 +13,7 @@
 
 #define maxWordNum 256
 #define maxWordSize 64
-
-
+#define kMaxAtx 1024
 /*
  *isBackground: bool, 是否后台运行
  *infile: FILE*, 输入, 对于“|”，由调用程序fopen一个临时buf
@@ -45,6 +44,10 @@ typedef struct Word
 	char words[maxWordNum][maxWordSize];
 	int wordsNum;
 } Word;
+struct Alias{
+	char* fc;
+	char* rc;
+};
 
 void init_shell();
 void init_command();
@@ -66,5 +69,8 @@ CMD** cmds;
 InputLine *iptl;
 bool is_background; //后台运行标识符
 int pipeNum;
+//const int kMaxAlias = 1024;
+struct Alias* alias_tbl[kMaxAtx];
+int atx=0;
 
 #endif

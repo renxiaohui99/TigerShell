@@ -9,6 +9,69 @@
 #include<string.h>
 #include <time.h>
 
+bool addAlias(char* fc, char* rc){
+	if(atx<kMaxAtx){
+
+		struct Alias* alias_new = (struct Alias*)malloc(sizeof(struct Alias));
+		alias_new->fc = (char* )malloc((strlen(fc)+1)*sizeof(char));
+		strcmp(alias_new->fc, fc);
+		//alias_new->rc = (char* )malloc((strlen(rc)+1)*sizeof(char));
+		//strcmp(alias_new->rc, rc);
+		
+		//保存现在的cmds
+		//解析tc指向的字符串
+		//执行tc解析出来的命令
+		//还原cmds
+		
+		
+		++atx;
+
+		alias_tbl[atx] = alias_new;
+		return true;
+	}else{
+
+		printf("too many alias!\n");
+		return false;
+	}
+
+}
+
+bool alias(CMD* cmd){
+	char* fc = NULL; //fake cmd
+	char* rc = NULL; //real cmd
+	int ax = 0;
+	while(cmd->argv[1][ax] != '=' && cmd->argv[1][ax] != '\0'){
+		++ax;
+	}
+	if(cmd->argv[1][ax] == '\0'){
+		printf("alias: alias <name>='<cmd>'.\n");
+		return false;
+	}else{
+		cmd->argv[1][ax] = '\0';
+		fc = &cmd->argv[1][0];
+		rc = &cmd->argv[1][ax+1];
+		if(rc[0]!='\''&&rc[0]!='\"'){
+			printf("alias: alias <name>='<cmd>'.\n");
+
+		}else{
+			if(rc[strlen(rc-1)]!='\''&&rc[strlen(rc-1)]!='\"'){
+
+				printf("alias: alias <name>='<cmd>'.\n");
+			}else{
+				rc[strlen(rc)-1] = '\0';
+				
+
+				if(addAlias(fc, rc+1)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 bool cd(CMD* cmd){
 	char* to_dir;
 	if(cmd->argv[1] == NULL){
@@ -30,33 +93,33 @@ bool cd(CMD* cmd){
 }
 
 bool history(CMD* cmd) {
-    if (cmd->argv[1] == NULL) {
-        HIST_ENTRY** his = history_list();
+	if (cmd->argv[1] == NULL) {
+		HIST_ENTRY** his = history_list();
 		if (his != NULL) {
 			for (size_t i = 0; his[i] != NULL; ++i) {
 				time_t time_stamp = history_get_time(his[i]);
 				struct tm* pt = localtime(&time_stamp);
 				fprintf(stdout,  "%d-%02d-%02d %02d:%02d:%02d \033[40;33m%s\033[0m\n",
-					pt->tm_year + 1900,
-					pt->tm_mon + 1,
-					pt->tm_mday,
-					pt->tm_hour,
-					pt->tm_min,
-					pt->tm_sec,
-					his[i]->line);
+						pt->tm_year + 1900,
+						pt->tm_mon + 1,
+						pt->tm_mday,
+						pt->tm_hour,
+						pt->tm_min,
+						pt->tm_sec,
+						his[i]->line);
 			}
 		}
 		else {
 			fprintf(stdout, "no history records.\n");
 			return false;
 		}
-    }else if (cmd->argv[2] == NULL) {
-        for (size_t j = 0; j < strlen(cmd->argv[1]); ++j) {
-            if (cmd->argv[1][j] < '0' || cmd->argv[1][j]>'9') {
-                fprintf(stderr, "history: unexpected arguments!\n");
-                return false;
-            }
-        }
+	}else if (cmd->argv[2] == NULL) {
+		for (size_t j = 0; j < strlen(cmd->argv[1]); ++j) {
+			if (cmd->argv[1][j] < '0' || cmd->argv[1][j]>'9') {
+				fprintf(stderr, "history: unexpected arguments!\n");
+				return false;
+			}
+		}
 		HIST_ENTRY** his = history_list();
 		if (his!=NULL) {
 			size_t i = 0;
@@ -67,48 +130,55 @@ bool history(CMD* cmd) {
 				time_t time_stamp = history_get_time(his[i]);
 				struct tm* pt = localtime(&time_stamp);
 				fprintf(stdout, "%d-%02d-%02d %02d:%02d:%02d \033[40;33m%s\033[0m\n",
-					pt->tm_year + 1900,
-					pt->tm_mon + 1,
-					pt->tm_mday,
-					pt->tm_hour,
-					pt->tm_min,
-					pt->tm_sec,
-					his[i]->line);
+						pt->tm_year + 1900,
+						pt->tm_mon + 1,
+						pt->tm_mday,
+						pt->tm_hour,
+						pt->tm_min,
+						pt->tm_sec,
+						his[i]->line);
 			}
 		}
 		else {
 			fprintf(stdout, "no history records.\n");
 			return false;
 		}
-    }else {
-        fprintf(stderr, "history: too many arguments!\n");
-        return false;
-    }
-    return true;
+	}else {
+		fprintf(stderr, "history: too many arguments!\n");
+		return false;
+	}
+	return true;
 }
 
 int innerCMD(CMD* cmd){
-    //0: 内建，执行成功
-    //-1： 内建，执行失败
-    //1： 不是内建
-    int num;
-    if(strcmp(cmd->cmd, "cd") == 0){
-        if(cd(cmd)){
-            num = 0;
-        }else{
-            num = -1;
-        }
-    }else if (strcmp(cmd->cmd,"history")==0) {
-        if (history(cmd)) {
-            num = 0;
-        }else {
-            num = -1;
-        }
-    }
-    else{
-        num = 1;
-    }
-    return num;
+	//0: 内建，执行成功
+	//-1： 内建，执行失败
+	//1： 不是内建
+	int num;
+	if(strcmp(cmd->cmd, "cd") == 0){
+		if(cd(cmd)){
+			num = 0;
+		}else{
+			num = -1;
+		}
+	}else if (strcmp(cmd->cmd,"history")==0) {
+		if (history(cmd)) {
+			num = 0;
+		}else {
+			num = -1;
+		}
+	}
+	else{
+		num = 1;
+		//查询是否是alias命令
+		for(int i=0;i<atx;++i){
+			if(strcmp(cmd->cmd, alias_tbl[i]->fc)==0){
+				num = 2;
+			}	
+		}
+		
+	}
+	return num;
 
 }
 void cleanCMD(CMD* cmd){
@@ -129,6 +199,16 @@ void cleanCMD(CMD* cmd){
 		}
 		++ax;
 	}
+}
+bool alias_execute(char* fc){
+
+	for(int i=0;i<atx;++i){
+		if(strcmp(alias_tbl[i]->fc, fc) == 0){
+		
+			return execute(alias_tbl[i]->tc);
+		}
+	}
+	return false;
 }
 
 bool do_execute(const char* path,CMD* cmd){
@@ -159,7 +239,7 @@ bool do_execute(const char* path,CMD* cmd){
 			printf("func do_execute: execv failed!\n");
 			isSuccess = false;
 		}else{
-		
+
 			isSuccess = true;
 		}
 
@@ -188,6 +268,8 @@ bool do_execute(const char* path,CMD* cmd){
 			if(waitpid(pid, NULL, 0) == -1){
 				isSuccess = false;
 			}
+		}else{
+			printf("pid: %d\n", pid);
 		}
 		return isSuccess;
 		}
@@ -210,6 +292,14 @@ bool do_execute(const char* path,CMD* cmd){
 				//是内建命令，执行失败
 				isSuccess = false;
 				break;
+			}else if(num ==2){
+				if(alias_execute(cmds[i]->cmd)){
+					isSuccess = true;
+				}else{
+					isSuccess = false;
+				}
+	
+
 			}else if(num == 1){
 				//printf("命令类型判断正确\n");
 				//不是内建命令

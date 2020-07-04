@@ -1,1 +1,21 @@
-func do_execute: execv failed!
+总用量 156
+drwxr-xr-x 2 rxh rxh  4096 7月   2 10:12 abc
+-rw-r--r-- 1 rxh rxh     0 7月   3 22:31 buffile
+-rwxr-xr-x 1 rxh rxh   214 7月   2 12:57 c
+-rw-r--r-- 1 rxh rxh   728 6月  29 19:35 calMod.ign
+-rw-r--r-- 1 rxh rxh  6101 7月   3 22:28 execute.c
+-rw-r--r-- 1 rxh rxh     8 6月  29 18:45 grepfile.ign
+-rw-r--r-- 1 rxh rxh  1336 7月   2 11:06 head.h
+-rwxr-xr-x 1 rxh rxh 12992 7月   1 22:10 kblistener.x
+-rw-r--r-- 1 rxh rxh  4288 7月   3 22:06 main.c
+-rw-r--r-- 1 rxh rxh   389 7月   2 23:29 makefile
+-rwxr-xr-x 1 rxh rxh  8304 7月   1 17:32 printer
+-rw-r--r-- 1 rxh rxh    39 6月  29 16:48 README.md
+-rw-r--r-- 1 rxh rxh  2281 7月   2 23:07 searchfile.c
+-rwxrwxr-x 1 rxh rxh 27464 7月   3 22:28 shellexe.x
+-rw-r--r-- 1 rxh rxh 12453 7月   2 12:57 sly.c
+-rwxr-xr-x 1 rxh rxh  8816 6月  29 23:24 s.x
+-rw-r--r-- 1 rxh rxh    92 6月  29 18:46 test2_pipeline.ign
+drwxr-xr-x 2 rxh rxh  4096 7月   1 23:57 testdir
+-rw-r--r-- 1 rxh rxh     3 7月   1 17:30 t.ign
+-rwxr-xr-x 1 rxh rxh  8880 7月   1 18:24 tmp.x
