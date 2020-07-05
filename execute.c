@@ -81,7 +81,6 @@ bool addAlias(char* fc, char* rc){
 		//printf("bp4\n");
 		return true;
 	}else{
-
 		printf("too many alias!\n");
 		return false;
 	}
@@ -281,7 +280,7 @@ bool alias_execute(char* fc){
 			strcpy(ttmp, alias_tbl[i]->rc);
 		
 
-			iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+			iptl = malloc_InputLine();
 			iptl->line = ttmp;
 		
 			iptl->buffer_pos = strlen(iptl->line);

@@ -15,28 +15,20 @@ void handleSIGINT(){
 	write_history(NULL);
 	exit(0);
 }
-InputLine* malloc_InputLine(InputLine* input, int malloc_type)
+InputLine* malloc_InputLine()
 {
-	switch (malloc_type)
-	{
-		case MALLOC_INPUTLINE:
-			input = malloc(sizeof(InputLine));
-			if (!input) {
-				fprintf(stderr, "memory out\n");
-				exit(EXIT_FAILURE);
-			}
-			input->buffer_pos = 0;
-			input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
-			if (!input->line) {
-				fprintf(stderr, "memory out\n");
-				exit(EXIT_FAILURE);
-			}
-			return input;
-		default:
-			fprintf(stderr, "error malloc type in malloc iptl.\n");
-			exit(EXIT_FAILURE);
-			break;
+	InputLine* input = malloc(sizeof(InputLine));
+	if (!input) {
+		fprintf(stderr, "memory out\n");
+		exit(EXIT_FAILURE);
 	}
+	input->buffer_pos = 0;
+	input->line = malloc(sizeof(char) * MAX_INPUTLINE_SIZE);
+	if (!input->line) {
+		fprintf(stderr, "memory out\n");
+		exit(EXIT_FAILURE);
+	}
+	return input;
 }
 void free_InputLine(InputLine* input) {
 	if (input != NULL) {
@@ -187,7 +179,7 @@ void get_string() {
 
 
 	// get string
-	iptl = malloc_InputLine(NULL, MALLOC_INPUTLINE);
+	iptl = malloc_InputLine();
 	iptl->line = readline(header);
 	iptl->buffer_pos = strlen(iptl->line);
 

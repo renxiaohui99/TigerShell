@@ -5,7 +5,6 @@
 #include<stdbool.h>
 #include <readline/history.h>
 
-#define MALLOC_INPUTLINE 0
 #define MAX_INPUTLINE_SIZE 2048
 
 #define MAX_HOSTNAME_SIZE 512
@@ -49,7 +48,7 @@ struct Alias{
 	char* rc;
 };
 
-InputLine* malloc_InputLine(InputLine* input, int malloc_type);
+InputLine* malloc_InputLine();
 void free_InputLine(InputLine* input);
 void free_cmds(CMD** cmds); 
 void init_shell();

@@ -1,1 +1,4 @@
-ll ls -al
+ll  ls -al
+pp ls
+pl pp
+aaa pl
